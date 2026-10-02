@@ -1,0 +1,343 @@
+# ==================================================
+# 🎮 GAMEHUB MAIN
+# ==================================================
+
+import customtkinter as ctk
+
+from config import *
+from theme import animate_rgb
+
+from splash import SplashScreen
+
+from home import HomePage
+from launcher import GameLauncher
+from music import MusicPlayer
+from timer import TimerSystem
+from todo import TodoSystem
+
+# ==================================================
+# 🎨 CUSTOMTKINTER
+# ==================================================
+
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("dark-blue")
+
+
+# ==================================================
+# 🚀 MAIN APP
+# ==================================================
+
+class App(ctk.CTk):
+
+    def __init__(self):
+
+        super().__init__()
+
+        # ==================================================
+        # 🪟 WINDOW
+        # ==================================================
+
+        self.title(APP_NAME)
+
+        width = 1450
+        height = 900
+
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        window_width = 1200
+        window_height = 700
+
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+
+        print("SCREEN:", screen_width, screen_height)
+        print("WINDOW:", window_width, window_height)
+        print("POS:", x, y)
+
+        self.geometry(
+            f"{window_width}x{window_height}+{x}+{y}"
+        )
+
+        self.update_idletasks()
+
+        print(self.geometry())
+
+        self.minsize(
+            1200,
+            750
+        )
+
+        self.configure(
+            fg_color="#111111"
+        )
+
+        # ==================================================
+        # 🎬 SPLASH
+        # ==================================================
+
+        self.withdraw()
+
+        splash = SplashScreen(self)
+
+        self.after(
+            2500,
+            self.deiconify
+        )
+
+        # ==================================================
+        # GRID
+        # ==================================================
+
+        self.grid_columnconfigure(
+            1,
+            weight=1
+        )
+
+        self.grid_rowconfigure(
+            0,
+            weight=1
+        )
+
+        # ==================================================
+        # SIDEBAR
+        # ==================================================
+
+        self.sidebar = ctk.CTkFrame(
+            self,
+            width=220,
+            corner_radius=0,
+            border_width=2
+        )
+
+        self.sidebar.grid(
+            row=0,
+            column=0,
+            sticky="nswe",
+            padx=(5,0)
+        )
+
+        self.sidebar.grid_propagate(False)
+
+        # ==================================================
+        # LOGO
+        # ==================================================
+
+        logo_frame = ctk.CTkFrame(
+            self.sidebar,
+            fg_color="transparent"
+        )
+
+        logo_frame.pack(
+            pady=(25, 20)
+        )
+
+        ctk.CTkLabel(
+            logo_frame,
+            text="🎮",
+            font=("Arial", 40)
+        ).pack()
+
+        ctk.CTkLabel(
+            logo_frame,
+            text="GameHub",
+            font=("Arial", 30, "bold"),
+            text_color="#00ffee"
+        ).pack()
+
+        # ==================================================
+        # NAVIGATION
+        # ==================================================
+
+        nav_frame = ctk.CTkFrame(
+            self.sidebar,
+            fg_color="transparent"
+        )
+
+        nav_frame.pack(
+            fill="x",
+            padx=20,
+            pady=10
+        )
+
+        buttons = [
+
+            ("🏠 Home", "home"),
+            ("🎮 Launcher", "launcher"),
+            ("🎵 Music", "music"),
+            ("⏱ Timer", "timer"),
+            ("📝 To-Do", "todo")
+
+        ]
+
+        self.nav_buttons = []
+
+        for text, page in buttons:
+
+            btn = ctk.CTkButton(
+                nav_frame,
+                text=text,
+                height=50,
+                corner_radius=15,
+                font=("Arial", 16, "bold"),
+                command=lambda p=page:
+                self.show_page(p)
+            )
+
+            btn.pack(
+                fill="x",
+                pady=8
+            )
+
+            self.nav_buttons.append(btn)
+
+        # ==================================================
+        # VERSION
+        # ==================================================
+
+        version_frame = ctk.CTkFrame(
+            self.sidebar,
+            fg_color="transparent"
+        )
+
+        version_frame.pack(
+            side="bottom",
+            pady=20
+        )
+
+        ctk.CTkLabel(
+            version_frame,
+            text="GameHub v1.0",
+            text_color="gray"
+        ).pack()
+
+        # ==================================================
+        # MAIN CONTAINER
+        # ==================================================
+
+        self.container = ctk.CTkFrame(
+            self,
+            fg_color="#111111",
+            corner_radius=0
+        )
+
+        self.container.grid(
+            row=0,
+            column=1,
+            sticky="nsew"
+        )
+
+        self.container.grid_rowconfigure(
+            0,
+            weight=1
+        )
+
+        self.container.grid_columnconfigure(
+            0,
+            weight=1
+        )
+
+        # ==================================================
+        # PAGES
+        # ==================================================
+
+        self.pages = {}
+
+        # HOME
+
+        self.pages["home"] = ctk.CTkFrame(
+            self.container,
+            fg_color="#111111"
+        )
+
+        HomePage(
+            self,
+            self.pages["home"]
+        )
+
+        # LAUNCHER
+
+        self.pages["launcher"] = ctk.CTkFrame(
+            self.container,
+            fg_color="#111111"
+        )
+
+        GameLauncher(
+            self,
+            self.pages["launcher"]
+        )
+
+        # MUSIC
+
+        self.pages["music"] = ctk.CTkFrame(
+            self.container,
+            fg_color="#111111"
+        )
+
+        MusicPlayer(
+            self,
+            self.pages["music"]
+        )
+
+        # TIMER
+
+        self.pages["timer"] = ctk.CTkFrame(
+            self.container,
+            fg_color="#111111"
+        )
+
+        TimerSystem(
+            self,
+            self.pages["timer"]
+        )
+
+        # TODO
+
+        self.pages["todo"] = ctk.CTkFrame(
+            self.container,
+            fg_color="#111111"
+        )
+
+        TodoSystem(
+            self,
+            self.pages["todo"]
+        )
+
+        # ==================================================
+        # START PAGE
+        # ==================================================
+
+        self.show_page("home")
+
+        # ==================================================
+        # RGB EFFECT
+        # ==================================================
+
+        animate_rgb(self)
+
+    # ==================================================
+    # PAGE SWITCH
+    # ==================================================
+
+    def show_page(self, page_name):
+
+        for page in self.pages.values():
+
+            page.grid_forget()
+
+        self.pages[page_name].grid(
+            row=0,
+            column=0,
+            sticky="nsew"
+        )
+
+
+# ==================================================
+# 🚀 RUN
+# ==================================================
+
+if __name__ == "__main__":
+
+    app = App()
+
+    app.mainloop()
