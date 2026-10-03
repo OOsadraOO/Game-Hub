@@ -29,10 +29,13 @@ class MusicPlayer:
         self.repeat = False
         self.shuffle = False
         self.volume = 0.5
+        self.track_length = 0.0
+        self.user_seeking = false
 
         self.build_ui()
         self.render_playlist()
         pygame.mixer.music.set_volume(self.volume)
+        self.update_timeline()
 
     def build_ui(self):
         header = ctk.CTkFrame(self.parent, fg_color="transparent")
@@ -85,6 +88,34 @@ class MusicPlayer:
             text_color="gray"
         )
         self.status_label.pack(pady=(0, 25))
+
+        # ==================================================
+        # ⏱ TIMELINE / SEEK
+        # ==================================================
+
+        timeline_frame = ctk.CTkFrame(now_card, fg_color="transparent")
+        timeline_frame.pack(fill="x", padx=55, pady=(4, 8))
+
+        time_row = ctk.CTkFrame(timeline_frame, fg_color="transparent")
+        time_row.pack(fill="x")
+
+        self.current_time_label = ctk.CTkLabel(
+            time_row, text="0:00", font=("Arial", 11), text_color="gray"
+        )
+        self.current_time_label.pack(side="left")
+
+        self.total_time_label = ctk.CTkLabel(
+            time_row, text="0:00", font=("Arial", 11), text_color="gray"
+        )
+        self.total_time_label.pack(side="right")
+
+        self.timeline_slider = ctk.CTkSlider(
+            timeline_frame, from_=0, to=1, height=14, command=self.seek_music
+        )
+        self.timeline_slider.set(0)
+        self.timeline_slider.pack(fill="x", pady=(4, 0))
+        self.timeline_slider.bind("<Button-1>", self.start_seek)
+        self.timeline_slider.bind("<ButtonRelease-1>", self.finish_seek)
 
         controls = ctk.CTkFrame(now_card, fg_color="transparent")
         controls.pack(pady=8)
@@ -280,6 +311,15 @@ class MusicPlayer:
 
         try:
             pygame.mixer.music.load(path)
+            self.track_length = 0.0
+            try:
+                self.track_length = max(0.0, float(pygame.mixer.Sound(path).get_length()))
+            except pygame.error:
+                pass
+            self.timeline_slider.configure(to=max(self.track_length, 1.0))
+            self.timeline_slider.set(0)
+            self.current_time_label.configure(text="0:00")
+            self.total_time_label.configure(text=self.format_time(self.track_length))
             if autoplay:
                 pygame.mixer.music.play()
         except pygame.error as error:
@@ -384,3 +424,46 @@ class MusicPlayer:
     def change_volume(self, value):
         self.volume = float(value)
         pygame.mixer.music.set_volume(self.volume)
+
+    
+    # ==================================================
+    # ⏱ TIMELINE / SEEK
+    # ==================================================
+
+    @staticmethod
+    def format_time(seconds):
+        seconds = max(0, int(seconds))
+        minutes, seconds = divmod(seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        if hours:
+            return f"{hours}:{minutes:02d}:{seconds:02d}"
+        return f"{minutes}:{seconds:02d}"
+
+    def start_seek(self, _event=None):
+        self.user_seeking = True
+
+    def finish_seek(self, _event=None):
+        self.user_seeking = False
+        self.seek_music(self.timeline_slider.get())
+
+    def seek_music(self, value):
+        if not self.current_music or self.track_length <= 0:
+            return
+        position = max(0.0, min(float(value), self.track_length))
+        self.current_time_label.configure(text=self.format_time(position))
+        if self.user_seeking:
+            return
+        try:
+            pygame.mixer.music.set_pos(position)
+            self.is_paused = False
+            self.status_label.configure(text="Playing", text_color="#00ff88")
+        except pygame.error:
+            pass
+
+    def update_timeline(self):
+        if self.current_music and not self.user_seeking and not self.is_paused and self.track_length > 0:
+            position = pygame.mixer.music.get_pos() / 1000.0
+            position = max(0.0, min(position, self.track_length))
+            self.timeline_slider.set(position)
+            self.current_time_label.configure(text=self.format_time(position))
+        self.parent.after(400, self.update_timeline)
