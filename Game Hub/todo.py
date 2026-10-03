@@ -127,7 +127,7 @@ class TodoSystem:
 
         for mode, button in self.filter_buttons.items():
             button.configure(
-                fg_color=("#00aa88" if mode == self.filter_mode else None)
+                fg_color="#00aa88" if mode == self.filter_mode else "transparent"
             )
 
         visible = []
