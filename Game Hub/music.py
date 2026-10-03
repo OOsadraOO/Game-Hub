@@ -30,7 +30,7 @@ class MusicPlayer:
         self.shuffle = False
         self.volume = 0.5
         self.track_length = 0.0
-        self.user_seeking = false
+        self.user_seeking = False
 
         self.build_ui()
         self.render_playlist()
