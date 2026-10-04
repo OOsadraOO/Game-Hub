@@ -33,23 +33,19 @@ def _draw(draw, kind, s, color):
         draw.rectangle((s*.45, s*.61, s*.55, s*.82), fill=color)
 
     elif kind == "logo":
-        # Brand mark: a distinct shield around a minimal gamepad.
-        draw.rounded_rectangle(
-            (s*.12, s*.08, s*.88, s*.92),
-            radius=int(s*.20),
-            outline=color,
+        # GameHub brand mark: a bold G with a subtle play cue.
+        draw.arc(
+            (s*.18, s*.16, s*.76, s*.84),
+            start=38,
+            end=320,
+            fill=color,
             width=w
         )
-        draw.rounded_rectangle(
-            (s*.25, s*.38, s*.75, s*.68),
-            radius=int(s*.12),
-            outline=color,
-            width=w
+        _line(draw, [(s*.48, s*.52), (s*.75, s*.52)], color, w)
+        draw.polygon(
+            [(s*.54, s*.40), (s*.54, s*.64), (s*.70, s*.52)],
+            fill=GREEN
         )
-        _line(draw, [(s*.34, s*.45), (s*.34, s*.59)], color, w)
-        _line(draw, [(s*.27, s*.52), (s*.41, s*.52)], color, w)
-        draw.ellipse((s*.57, s*.44, s*.64, s*.51), fill=GREEN)
-        draw.ellipse((s*.67, s*.54, s*.74, s*.61), fill=GREEN)
 
     elif kind == "launcher":
         # Launcher: a game window with a clear play symbol.
