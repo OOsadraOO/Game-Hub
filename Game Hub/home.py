@@ -6,6 +6,7 @@ import customtkinter as ctk
 import psutil
 import random
 from performance import get_gpu_usage
+from session import GamingSessionWindow
 
 from utils import load_json
 from settings import SettingsWindow
@@ -65,6 +66,18 @@ class HomePage:
         ).pack(
             side="left"
         )
+
+        ctk.CTkButton(
+            top_frame,
+            text="🎮 Session",
+            width=115,
+            height=44,
+            corner_radius=13,
+            fg_color="#202727",
+            hover_color="#00aa88",
+            font=("Arial", 12, "bold"),
+            command=lambda: GamingSessionWindow(self.app)
+        ).pack(side="right", padx=(0, 8))
 
         ctk.CTkButton(
         top_frame,
