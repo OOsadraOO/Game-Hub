@@ -136,7 +136,17 @@ class GameLauncher:
         # 📊 STATS CARDS
         # ==================================================
 
-       
+        stats_frame = ctk.CTkFrame(
+            self.parent,
+            fg_color="transparent"
+        )
+
+        stats_frame.pack(
+            fill="x",
+            padx=20,
+            pady=(2, 10)
+        )
+
         # ---------- Games ----------
 
         games_card = ctk.CTkFrame(
