@@ -5,7 +5,7 @@
 import customtkinter as ctk
 import psutil
 import random
-from performance import get_gpu_usage
+from performance import get_gpu_usage, get_gpu_name
 from session import GamingSessionWindow
 
 from utils import load_json
@@ -536,12 +536,22 @@ class HomePage:
         self.cpu_card_label.configure(text=f"{cpu:.0f}%")
         self.ram_card_label.configure(text=f"{ram:.0f}%")
 
+        gpu_name = get_gpu_name()
+
         if gpu is None:
             self.gpu_card_label.configure(text="—")
-            self.gpu_status_label.configure(text="GPU: unavailable")
+            status = "GPU: usage unavailable"
+            if gpu_name:
+                status = f"GPU: {gpu_name} • usage unavailable"
+            self.gpu_status_label.configure(text=status)
         else:
             self.gpu_card_label.configure(text=f"{gpu:.0f}%")
-            self.gpu_status_label.configure(text=f"GPU: {gpu:.0f}%")
+            if gpu_name:
+                self.gpu_status_label.configure(
+                    text=f"GPU: {gpu_name} • {gpu:.0f}%"
+                )
+            else:
+                self.gpu_status_label.configure(text=f"GPU: {gpu:.0f}%")
 
         for key, value in (
             ("CPU", cpu),
