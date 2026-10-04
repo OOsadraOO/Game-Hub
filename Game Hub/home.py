@@ -172,41 +172,6 @@ class HomePage:
 
         self.games_count.pack()
 
-        # Tasks
-
-        self.tasks_card = ctk.CTkFrame(
-            row1,
-            width=220,
-            height=130,
-            corner_radius=20,
-            border_width=1,
-            border_color="#ff00ff"
-        )
-
-        self.tasks_card.pack(
-            side="left",
-            padx=10,
-            expand=True,
-            fill="both"
-        )
-
-        ctk.CTkLabel(
-            self.tasks_card,
-            text="Tasks",
-            font=("Arial", 24)
-        ).pack(
-            pady=(9, 5)
-        )
-
-        self.tasks_count = ctk.CTkLabel(
-            self.tasks_card,
-            text="0",
-            font=("Arial", 40, "bold"),
-            text_color="#ff00ff"
-        )
-
-        self.tasks_count.pack()
-
         # CPU
 
         self.cpu_card = ctk.CTkFrame(
@@ -314,7 +279,6 @@ class HomePage:
 
         dashboard_cards = [
             self.games_card,
-            self.tasks_card,
             self.cpu_card,
             self.ram_card,
             self.gpu_card
@@ -435,9 +399,9 @@ class HomePage:
             quote_frame,
             text=random_quote,
             wraplength=400,
-            font=("Arial", 14)
+            font=("Arial", 18, "bold")
         ).pack(
-            pady=8
+            pady=(8, 4)
         )
 
         # Quick Actions
@@ -563,12 +527,6 @@ class HomePage:
         try:
             games = load_json("data/games.json")
             self.games_count.configure(text=str(len(games)))
-        except Exception:
-            pass
-
-        try:
-            tasks = load_json("data/todo.json")
-            self.tasks_count.configure(text=str(len(tasks)))
         except Exception:
             pass
 
