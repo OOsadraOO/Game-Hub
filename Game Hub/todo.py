@@ -12,8 +12,16 @@ class TodoSystem:
     def __init__(self, app, parent):
         self.app = app
         self.parent = parent
-        self.tasks = load_json("data/todo.json") or []
-        self.completed = set()
+        raw_tasks = load_json("data/todo.json") or []
+
+        if raw_tasks and isinstance(raw_tasks[0], dict):
+            self.tasks = raw_tasks
+        else:
+            self.tasks = [
+                {"text": task, "completed": False}
+                for task in raw_tasks
+            ]
+
         self.filter_mode = "all"
 
         self.build_ui()
@@ -118,7 +126,10 @@ class TodoSystem:
         if not task:
             return
 
-        self.tasks.append(task)
+        self.tasks.append({
+            "text": task,
+            "completed": False
+        })
         save_json("data/todo.json", self.tasks)
         self.task_entry.delete(0, "end")
         self.filter_mode = "all"
@@ -132,7 +143,10 @@ class TodoSystem:
         for widget in self.tasks_frame.winfo_children():
             widget.destroy()
 
-        active_count = sum(1 for i in range(len(self.tasks)) if i not in self.completed)
+        active_count = sum(
+            1 for task in self.tasks
+            if not task.get("completed", False)
+        )
         completed_count = len(self.tasks) - active_count
         self.count_label.configure(
             text=f"{len(self.tasks)} tasks  •  {active_count} active"
@@ -145,14 +159,14 @@ class TodoSystem:
 
         visible = []
         for index, task in enumerate(self.tasks):
-            is_completed = index in self.completed
+            is_completed = task.get("completed", False)
 
             if self.filter_mode == "active" and is_completed:
                 continue
             if self.filter_mode == "completed" and not is_completed:
                 continue
 
-            visible.append((index, task, is_completed))
+            visible.append((index, task.get("text", ""), is_completed))
 
         if not visible:
             message = {
@@ -213,11 +227,15 @@ class TodoSystem:
         ).pack(side="right", padx=12)
 
     def toggle_task(self, index):
-        if index in self.completed:
-            self.completed.remove(index)
-        else:
-            self.completed.add(index)
+        if index < 0 or index >= len(self.tasks):
+            return
 
+        self.tasks[index]["completed"] = not self.tasks[index].get(
+            "completed",
+            False
+        )
+
+        save_json("data/todo.json", self.tasks)
         self.render_tasks()
 
     def delete_task(self, task):
@@ -231,24 +249,17 @@ class TodoSystem:
 
         self.tasks.pop(index)
 
-        self.completed = {
-            i if i < index else i - 1
-            for i in self.completed
-            if i != index
-        }
-
         save_json("data/todo.json", self.tasks)
         self.render_tasks()
 
     def clear_completed(self):
-        if not self.completed:
+        if not any(task.get("completed", False) for task in self.tasks):
             return
 
         self.tasks = [
-            task for index, task in enumerate(self.tasks)
-            if index not in self.completed
+            task for task in self.tasks
+            if not task.get("completed", False)
         ]
-        self.completed.clear()
 
         save_json("data/todo.json", self.tasks)
         self.render_tasks()
