@@ -102,7 +102,7 @@ class HomePage:
         )
 
         self.clock_label.pack(
-            pady=(2, 14)
+            pady=(0, 6)
         )
 
         # ==============================================
@@ -117,8 +117,8 @@ class HomePage:
         dashboard.pack(
             fill="both",
             expand=True,
-            padx=25,
-            pady=10
+            padx=20,
+            pady=4
         )
 
         # ==============================================
@@ -132,7 +132,7 @@ class HomePage:
 
         row1.pack(
             fill="x",
-            pady=10
+            pady=4
         )
 
         # Games
@@ -155,10 +155,10 @@ class HomePage:
 
         ctk.CTkLabel(
             self.games_card,
-            text="🎮 Games",
+            text="Games",
             font=("Arial", 20, "bold")
         ).pack(
-            pady=(16, 10)
+            pady=(10, 5)
         )
 
         self.games_count = ctk.CTkLabel(
@@ -190,10 +190,10 @@ class HomePage:
 
         ctk.CTkLabel(
             self.tasks_card,
-            text="📝 Tasks",
+            text="Tasks",
             font=("Arial", 24)
         ).pack(
-            pady=15
+            pady=(9, 5)
         )
 
         self.tasks_count = ctk.CTkLabel(
@@ -225,10 +225,10 @@ class HomePage:
 
         ctk.CTkLabel(
             self.cpu_card,
-            text="🖥 CPU",
+            text="CPU",
             font=("Arial", 24)
         ).pack(
-            pady=15
+            pady=(9, 5)
         )
 
         self.cpu_card_label = ctk.CTkLabel(
@@ -260,10 +260,10 @@ class HomePage:
 
         ctk.CTkLabel(
             self.ram_card,
-            text="💾 RAM",
+            text="RAM",
             font=("Arial", 24)
         ).pack(
-            pady=15
+            pady=(9, 5)
         )
 
         self.ram_card_label = ctk.CTkLabel(
@@ -294,9 +294,9 @@ class HomePage:
 
         ctk.CTkLabel(
             self.gpu_card,
-            text="🎨 GPU",
+            text="GPU",
             font=("Arial", 24)
-        ).pack(pady=15)
+        ).pack(pady=(9, 5))
 
         self.gpu_card_label = ctk.CTkLabel(
             self.gpu_card,
@@ -349,7 +349,7 @@ class HomePage:
             border_width=1,
             border_color="#252d2d"
         )
-        performance_frame.pack(fill="both", expand=True, pady=15)
+        performance_frame.pack(fill="both", expand=True, pady=8)
 
         performance_header = ctk.CTkFrame(
             performance_frame,
@@ -373,11 +373,11 @@ class HomePage:
 
         self.performance_canvas = ctk.CTkCanvas(
             performance_frame,
-            height=175,
+            height=135,
             bg="#111111",
             highlightthickness=0
         )
-        self.performance_canvas.pack(fill="x", padx=18, pady=(4, 16))
+        self.performance_canvas.pack(fill="both", expand=True, padx=18, pady=(2, 10))
 
         self.performance_history = {
             "CPU": [0] * 60,
@@ -396,7 +396,7 @@ class HomePage:
 
         bottom_row.pack(
             fill="x",
-            pady=10
+            pady=5
         )
 
         # Quote
@@ -412,15 +412,17 @@ class HomePage:
             side="left",
             fill="both",
             expand=True,
-            padx=10
+            padx=(0, 6)
         )
+        quote_frame.configure(height=145)
+        quote_frame.pack_propagate(False)
 
         ctk.CTkLabel(
             quote_frame,
-            text="💬 Daily Quote",
+            text="Daily Quote",
             font=("Arial", 22, "bold")
         ).pack(
-            pady=10
+            pady=(12, 6)
         )
 
         random_quote = random.choice(
@@ -431,15 +433,16 @@ class HomePage:
             quote_frame,
             text=random_quote,
             wraplength=400,
-            font=("Arial", 18)
+            font=("Arial", 14)
         ).pack(
-            pady=15
+            pady=8
         )
 
         # Quick Actions
 
         quick_frame = ctk.CTkFrame(
             bottom_row,
+            height=145,
             corner_radius=20,
             border_width=1,
             border_color="#252d2d"
@@ -449,60 +452,52 @@ class HomePage:
             side="left",
             fill="both",
             expand=True,
-            padx=10
+            padx=(6, 0)
         )
+        quick_frame.pack_propagate(False)
 
         ctk.CTkLabel(
             quick_frame,
             text="⚡ Quick Actions",
-            font=("Arial", 22, "bold")
-        ).pack(pady=(10, 8))
-
-        ctk.CTkLabel(
-            quick_frame,
-            text="Jump directly to the tools you use most.",
-            font=("Arial", 12),
-            text_color="gray"
-        ).pack(pady=(0, 10))
+            font=("Arial", 18, "bold")
+        ).pack(pady=(10, 7))
 
         quick_buttons = ctk.CTkFrame(
             quick_frame,
             fg_color="transparent"
         )
-        quick_buttons.pack(fill="both", expand=True, padx=18, pady=(0, 14))
+        quick_buttons.pack(
+            fill="both",
+            expand=True,
+            padx=12,
+            pady=(0, 12)
+        )
 
-        ctk.CTkButton(
-            quick_buttons,
-            text="🎮  Start Gaming Session",
-            height=40,
-            corner_radius=11,
-            fg_color="#202727",
-            hover_color="#00aa88",
-            font=("Arial", 12, "bold"),
-            command=lambda: GamingSessionWindow(self.app)
-        ).pack(fill="x", pady=4)
+        quick_buttons.grid_columnconfigure((0, 1, 2), weight=1, uniform="quick")
+        quick_buttons.grid_rowconfigure(0, weight=1)
 
-        ctk.CTkButton(
-            quick_buttons,
-            text="📊  Open Statistics",
-            height=40,
-            corner_radius=11,
-            fg_color="#202727",
-            hover_color="#00aa88",
-            font=("Arial", 12, "bold"),
-            command=lambda: self.app.show_page("stats")
-        ).pack(fill="x", pady=4)
+        quick_actions = (
+            ("▶  Session", lambda: GamingSessionWindow(self.app)),
+            ("▦  Statistics", lambda: self.app.show_page("stats")),
+            ("♫  Music", lambda: self.app.show_page("music"))
+        )
 
-        ctk.CTkButton(
-            quick_buttons,
-            text="🎵  Open Music",
-            height=40,
-            corner_radius=11,
-            fg_color="#202727",
-            hover_color="#00aa88",
-            font=("Arial", 12, "bold"),
-            command=lambda: self.app.show_page("music")
-        ).pack(fill="x", pady=4)
+        for column, (label, command) in enumerate(quick_actions):
+            ctk.CTkButton(
+                quick_buttons,
+                text=label,
+                height=54,
+                corner_radius=12,
+                fg_color="#202727",
+                hover_color="#00aa88",
+                font=("Arial", 12, "bold"),
+                command=command
+            ).grid(
+                row=0,
+                column=column,
+                sticky="nsew",
+                padx=4
+            )
 
     # ==================================================
     # CLOCK
