@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from icons import get_icon
 from utils import load_json, save_json
 
 
@@ -93,7 +94,9 @@ class SettingsWindow(ctk.CTkToplevel):
 
         ctk.CTkButton(
             self,
-            text="💾 Save Settings",
+            text="Save Settings",
+            image=get_icon("settings", 18),
+            compound="left",
             height=44,
             corner_radius=12,
             fg_color="#00aa88",
