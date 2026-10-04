@@ -33,36 +33,39 @@ def _draw(draw, kind, s, color):
         draw.rectangle((s*.45, s*.61, s*.55, s*.82), fill=color)
 
     elif kind == "logo":
-        # Dedicated GameHub mark: a clear gamepad inside a simple badge.
+        # Brand mark: a distinct shield around a minimal gamepad.
         draw.rounded_rectangle(
-            (s*.10, s*.10, s*.90, s*.90),
-            radius=int(s*.18),
+            (s*.12, s*.08, s*.88, s*.92),
+            radius=int(s*.20),
             outline=color,
             width=w
         )
         draw.rounded_rectangle(
-            (s*.22, s*.32, s*.78, s*.68),
-            radius=int(s*.14),
+            (s*.25, s*.38, s*.75, s*.68),
+            radius=int(s*.12),
             outline=color,
             width=w
         )
-        _line(draw, [(s*.33, s*.42), (s*.33, s*.58)], color, w)
-        _line(draw, [(s*.25, s*.50), (s*.41, s*.50)], color, w)
-        draw.ellipse((s*.59, s*.41, s*.67, s*.49), fill=GREEN)
-        draw.ellipse((s*.70, s*.52, s*.78, s*.60), fill=GREEN)
+        _line(draw, [(s*.34, s*.45), (s*.34, s*.59)], color, w)
+        _line(draw, [(s*.27, s*.52), (s*.41, s*.52)], color, w)
+        draw.ellipse((s*.57, s*.44, s*.64, s*.51), fill=GREEN)
+        draw.ellipse((s*.67, s*.54, s*.74, s*.61), fill=GREEN)
 
     elif kind == "launcher":
-        # Clean gamepad icon for Launcher navigation and page title.
+        # Launcher: a game window with a clear play symbol.
         draw.rounded_rectangle(
-            (s*.16, s*.34, s*.84, s*.70),
-            radius=int(s*.15),
+            (s*.16, s*.18, s*.84, s*.82),
+            radius=int(s*.09),
             outline=color,
             width=w
         )
-        _line(draw, [(s*.31, s*.43), (s*.31, s*.61)], color, w)
-        _line(draw, [(s*.22, s*.52), (s*.40, s*.52)], color, w)
-        draw.ellipse((s*.61, s*.43, s*.68, s*.50), fill=GREEN)
-        draw.ellipse((s*.71, s*.53, s*.78, s*.60), fill=GREEN)
+        _line(draw, [(s*.20, s*.32), (s*.80, s*.32)], color, w)
+        draw.ellipse((s*.26, s*.24, s*.30, s*.28), fill=GREEN)
+        draw.ellipse((s*.33, s*.24, s*.37, s*.28), fill=GREEN)
+        draw.polygon(
+            [(s*.44, s*.43), (s*.44, s*.67), (s*.66, s*.55)],
+            fill=color
+        )
 
     elif kind == "music":
         _line(draw, [(s*.61, s*.20), (s*.61, s*.66)], color, w)
@@ -91,23 +94,17 @@ def _draw(draw, kind, s, color):
         draw.rounded_rectangle((s*.64, s*.22, s*.80, s*.80), radius=int(s*.025), fill=color)
 
     elif kind == "session":
-        # Controller + clock, kept deliberately minimal.
+        # Session: unmistakable clock, with a small controller cue.
+        draw.ellipse((s*.18, s*.18, s*.78, s*.78), outline=color, width=w)
+        _line(draw, [(s*.48, s*.31), (s*.48, s*.50), (s*.61, s*.58)], color, w)
         draw.rounded_rectangle(
-            (s*.16, s*.36, s*.70, s*.70),
-            radius=int(s*.14),
+            (s*.52, s*.66, s*.86, s*.84),
+            radius=int(s*.07),
             outline=color,
             width=w
         )
-        _line(draw, [(s*.31, s*.44), (s*.31, s*.62)], color, w)
-        _line(draw, [(s*.23, s*.53), (s*.39, s*.53)], color, w)
-        draw.ellipse((s*.48, s*.45, s*.55, s*.52), fill=GREEN)
-        draw.ellipse((s*.57, s*.55, s*.64, s*.62), fill=GREEN)
-        draw.ellipse((s*.60, s*.60, s*.86, s*.86), outline=color, width=w)
-        _line(draw, [(s*.73, s*.67), (s*.73, s*.74), (s*.78, s*.77)], color, w)
-
-    elif kind == "profile":
-        draw.ellipse((s*.35, s*.18, s*.65, s*.48), outline=color, width=w)
-        draw.arc((s*.22, s*.43, s*.78, s*.88), 200, 340, fill=color, width=w)
+        _line(draw, [(s*.62, s*.70), (s*.62, s*.79)], color, w)
+        _line(draw, [(s*.58, s*.745), (s*.66, s*.745)], color, w)
 
     elif kind == "settings":
         # Eight short teeth + clear center hole.
