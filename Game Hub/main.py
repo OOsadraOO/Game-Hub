@@ -6,6 +6,7 @@ import customtkinter as ctk
 
 from config import *
 from theme import animate_rgb
+from icons import get_icon
 
 from splash import SplashScreen
 
@@ -136,9 +137,9 @@ class App(ctk.CTk):
 
         ctk.CTkLabel(
             logo_frame,
-            text="🎮",
-            font=("Arial", 40)
-        ).pack()
+            image=get_icon("logo", 48),
+            text=""
+        ).pack(pady=(0, 4))
 
         ctk.CTkLabel(
             logo_frame,
@@ -163,24 +164,25 @@ class App(ctk.CTk):
         )
 
         buttons = [
-
-            ("🏠 Home", "home"),
-            ("🎮 Launcher", "launcher"),
-            ("🎵 Music", "music"),
-            ("⏱ Timer", "timer"),
-            ("📝 To-Do", "todo"),
-            ("📊 Stats", "stats")
-
+            ("Home", "home", "home"),
+            ("Launcher", "launcher", "launcher"),
+            ("Music", "music", "music"),
+            ("Timer", "timer", "timer"),
+            ("To-Do", "todo", "todo"),
+            ("Stats", "stats", "stats")
         ]
 
         self.nav_buttons = []
         self.nav_pages = []
 
-        for text, page in buttons:
+        for text, page, icon_name in buttons:
 
             btn = ctk.CTkButton(
                 nav_frame,
                 text=text,
+                image=get_icon(icon_name, 22),
+                compound="left",
+                anchor="w",
                 height=50,
                 corner_radius=14,
                 font=("Arial", 15, "bold"),
@@ -360,12 +362,12 @@ class App(ctk.CTk):
         search.focus_set()
 
         commands = [
-            ("🏠  Go Home", lambda: self.show_page("home")),
-            ("🎮  Open Launcher", lambda: self.show_page("launcher")),
-            ("🎵  Open Music", lambda: self.show_page("music")),
-            ("⏱  Open Timer", lambda: self.show_page("timer")),
-            ("📝  Open To-Do", lambda: self.show_page("todo")),
-            ("📊  Open Statistics", lambda: self.show_page("stats")),
+            ("Go Home", "home", lambda: self.show_page("home")),
+            ("Open Launcher", "launcher", lambda: self.show_page("launcher")),
+            ("Open Music", "music", lambda: self.show_page("music")),
+            ("Open Timer", "timer", lambda: self.show_page("timer")),
+            ("Open To-Do", "todo", lambda: self.show_page("todo")),
+            ("Open Statistics", "stats", lambda: self.show_page("stats")),
         ]
 
         rows = ctk.CTkScrollableFrame(window, corner_radius=15)
@@ -377,7 +379,7 @@ class App(ctk.CTk):
 
             query = search.get().lower().strip()
 
-            for label, command in commands:
+            for label, icon_name, command in commands:
                 if query and query not in label.lower():
                     continue
 
@@ -388,6 +390,8 @@ class App(ctk.CTk):
                 ctk.CTkButton(
                     rows,
                     text=label,
+                    image=get_icon(icon_name, 20),
+                    compound="left",
                     height=42,
                     corner_radius=10,
                     fg_color="#202727",
