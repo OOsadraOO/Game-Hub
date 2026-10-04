@@ -65,7 +65,7 @@ class HomePage:
         ctk.CTkButton(
             top_frame,
             text="Session",
-            image=get_icon("session", 18),
+            image=get_icon("session", 20),
             compound="left",
             width=115,
             height=42,
