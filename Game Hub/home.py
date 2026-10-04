@@ -55,7 +55,7 @@ class HomePage:
         top_frame.pack(
             fill="x",
             padx=25,
-            pady=(22, 12)
+            pady=(10, 6)
         )
 
         ctk.CTkLabel(
@@ -102,7 +102,7 @@ class HomePage:
         )
 
         self.clock_label.pack(
-            pady=(0, 6)
+            pady=(0, 2)
         )
 
         # ==============================================
@@ -349,13 +349,13 @@ class HomePage:
             border_width=1,
             border_color="#252d2d"
         )
-        performance_frame.pack(fill="both", expand=True, pady=8)
+        performance_frame.pack(fill="both", expand=True, pady=4)
 
         performance_header = ctk.CTkFrame(
             performance_frame,
             fg_color="transparent"
         )
-        performance_header.pack(fill="x", padx=20, pady=(14, 4))
+        performance_header.pack(fill="x", padx=20, pady=(8, 2))
 
         ctk.CTkLabel(
             performance_header,
@@ -377,7 +377,7 @@ class HomePage:
             bg="#111111",
             highlightthickness=0
         )
-        self.performance_canvas.pack(fill="both", expand=True, padx=18, pady=(2, 10))
+        self.performance_canvas.pack(fill="both", expand=True, padx=18, pady=(0, 6))
 
         self.performance_history = {
             "CPU": [0] * 60,
@@ -414,7 +414,7 @@ class HomePage:
             expand=True,
             padx=(0, 6)
         )
-        quote_frame.configure(height=145)
+        quote_frame.configure(height=132)
         quote_frame.pack_propagate(False)
 
         ctk.CTkLabel(
@@ -422,7 +422,7 @@ class HomePage:
             text="Daily Quote",
             font=("Arial", 22, "bold")
         ).pack(
-            pady=(12, 6)
+            pady=(8, 4)
         )
 
         random_quote = random.choice(
@@ -470,7 +470,7 @@ class HomePage:
             fill="both",
             expand=True,
             padx=12,
-            pady=(0, 12)
+            pady=(0, 8)
         )
 
         quick_buttons.grid_columnconfigure((0, 1, 2), weight=1, uniform="quick")
