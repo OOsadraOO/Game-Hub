@@ -202,6 +202,8 @@ class GameLauncher:
         ctk.CTkLabel(
             games_card,
             text="Games",
+            image=get_icon("launcher", 16),
+            compound="left",
             font=("Arial",12)
         ).pack(pady=(8,0))
 
@@ -237,6 +239,8 @@ class GameLauncher:
         ctk.CTkLabel(
             launch_card,
             text="Launches",
+            image=get_icon("play", 16),
+            compound="left",
             font=("Arial",12)
         ).pack(pady=(8,0))
 
@@ -270,6 +274,8 @@ class GameLauncher:
         ctk.CTkLabel(
             favorite_card,
             text="Favorites",
+            image=get_icon("star", 16),
+            compound="left",
             font=("Arial",12)
         ).pack(pady=(8,0))
 
@@ -305,6 +311,8 @@ class GameLauncher:
         ctk.CTkLabel(
             last_card,
             text="Last Played",
+            image=get_icon("timer", 16),
+            compound="left",
             font=("Arial",12)
         ).pack(pady=(8,0))
 
