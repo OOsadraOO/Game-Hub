@@ -3,6 +3,7 @@
 # ==================================================
 
 import customtkinter as ctk
+from icons import get_icon
 
 from utils import format_time, show_notification
 
