@@ -97,16 +97,25 @@ class GameLauncher:
 
     def build_ui(self):
 
-        ctk.CTkLabel(
+        title_bar = ctk.CTkFrame(
             self.parent,
-            text="Game Launcher",
-            image=get_icon("launcher", 34),
-            compound="left",
-            font=("Arial", 32, "bold"),
-            text_color="#00ffee"
-        ).pack(
-            pady=(12, 8)
+            height=62,
+            corner_radius=18,
+            border_width=1,
+            border_color="#252d2d",
+            fg_color="#151919"
         )
+        title_bar.pack(fill="x", padx=20, pady=(8, 6))
+        title_bar.pack_propagate(False)
+
+        ctk.CTkLabel(
+            title_bar,
+            text="Game Launcher",
+            image=get_icon("launcher", 28),
+            compound="left",
+            font=("Arial", 26, "bold"),
+            text_color="#00ffee"
+        ).pack(side="left", padx=18)
         
         # ==================================================
         # HEADER
@@ -119,7 +128,8 @@ class GameLauncher:
 
         header.pack(
             fill="x",
-            pady=(8,10)
+            padx=20,
+            pady=(2, 8)
         )
 
         # ---------------- Search ----------------
@@ -167,7 +177,7 @@ class GameLauncher:
         stats_frame.pack(
             fill="x",
             padx=20,
-            pady=(2, 10)
+            pady=(0, 8)
         )
 
         # ---------- Games ----------
