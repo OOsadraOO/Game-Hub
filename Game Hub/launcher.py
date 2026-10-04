@@ -38,6 +38,53 @@ class GameLauncher:
         self.render_games()
 
     # ==================================================
+    # ✨ HOVER EFFECT
+    # ==================================================
+
+    def _bind_hover(self, widget, normal, hover, border_normal=None, border_hover=None):
+
+        def on_enter(_event=None):
+            try:
+                widget.configure(fg_color=hover)
+                if border_hover is not None:
+                    widget.configure(border_color=border_hover)
+            except Exception:
+                pass
+
+        def on_leave(_event=None):
+            try:
+                widget.configure(fg_color=normal)
+                if border_normal is not None:
+                    widget.configure(border_color=border_normal)
+            except Exception:
+                pass
+
+        widget.bind("<Enter>", on_enter, add="+")
+        widget.bind("<Leave>", on_leave, add="+")
+
+    def _bind_card_hover(self, card, children):
+
+        normal = "#1b1b1b"
+        hover = "#202525"
+        border_normal = "#2c2c2c"
+        border_hover = "#00ffee"
+
+        self._bind_hover(
+            card,
+            normal,
+            hover,
+            border_normal,
+            border_hover
+        )
+
+        for child in children:
+            try:
+                child.bind("<Enter>", lambda _e, c=card: c.configure(fg_color="#202525", border_color="#00ffee"), add="+")
+                child.bind("<Leave>", lambda _e, c=card: c.configure(fg_color="#1b1b1b", border_color="#2c2c2c"), add="+")
+            except Exception:
+                pass
+
+    # ==================================================
     # 🎨 UI
     # ==================================================
 
@@ -46,25 +93,12 @@ class GameLauncher:
         ctk.CTkLabel(
             self.parent,
             text="🎮 Game Launcher",
-            font=("Arial", 32, "bold")
+            font=("Arial", 32, "bold"),
+            text_color="#00ffee"
         ).pack(
-            pady=(20, 10)
+            pady=(12, 8)
         )
         
-        stats_frame = ctk.CTkFrame(
-            self.parent,
-            fg_color="transparent"
-        )
-
-        stats_frame.pack(
-            fill="x",
-            padx=20,
-            pady=(0,15)
-        )
-
-        
-        
-
         # ==================================================
         # HEADER
         # ==================================================
@@ -76,7 +110,7 @@ class GameLauncher:
 
         header.pack(
             fill="x",
-            pady=(20,10)
+            pady=(8,10)
         )
 
         # ---------------- Search ----------------
@@ -85,13 +119,13 @@ class GameLauncher:
 
             header,
 
-            width=320,
+            width=360,
 
-            height=40,
+            height=42,
 
             textvariable=self.search_var,
 
-            placeholder_text="🔍 Search Game..."
+            placeholder_text="🔍  Search games..."
         )
 
         self.search_entry.pack(
@@ -107,10 +141,12 @@ class GameLauncher:
 
         games_card = ctk.CTkFrame(
             stats_frame,
-            width=120,
-            height=70,
-            corner_radius=15,
-            fg_color="#1b1b1b"
+            width=125,
+            height=72,
+            corner_radius=16,
+            border_width=1,
+            border_color="#2c2c2c",
+            fg_color="#181b1b"
         )
 
         games_card.pack(
@@ -140,10 +176,12 @@ class GameLauncher:
 
         launch_card = ctk.CTkFrame(
             stats_frame,
-            width=120,
-            height=70,
-            corner_radius=15,
-            fg_color="#1b1b1b"
+            width=125,
+            height=72,
+            corner_radius=16,
+            border_width=1,
+            border_color="#2c2c2c",
+            fg_color="#181b1b"
         )
 
         launch_card.pack(
@@ -206,10 +244,12 @@ class GameLauncher:
 
         last_card = ctk.CTkFrame(
             stats_frame,
-            width=180,
-            height=70,
-            corner_radius=15,
-            fg_color="#1b1b1b" 
+            width=195,
+            height=72,
+            corner_radius=16,
+            border_width=1,
+            border_color="#2c2c2c",
+            fg_color="#181b1b" 
         )
 
         last_card.pack(
@@ -247,9 +287,12 @@ class GameLauncher:
 
             text="➕ Add Game",
 
-            width=150,
+            width=145,
 
-            height=40,
+            height=42,
+            corner_radius=12,
+            font=("Arial", 13, "bold"),
+            hover_color="#00ccaa",
 
             command=self.add_game
 
@@ -264,11 +307,13 @@ class GameLauncher:
 
             header,
 
-            text="🔄",
+            text="↻",
 
-            width=45,
+            width=46,
 
-            height=40,
+            height=42,
+            corner_radius=12,
+            font=("Arial", 18, "bold"),
 
             command=self.render_games
 
@@ -280,12 +325,13 @@ class GameLauncher:
         self.games_frame = ctk.CTkScrollableFrame(
             self.parent,
             width=1000,
-            height=500
+            height=500,
+            corner_radius=18
         )
 
         self.games_frame.pack(
             padx=20,
-            pady=20,
+            pady=(8, 20),
             fill="both",
             expand=True
         )
@@ -419,13 +465,14 @@ class GameLauncher:
             self.games_frame,
             corner_radius=20,
             border_width=1,
+            border_color="#2c2c2c",
             fg_color=("#1b1b1b", "#1b1b1b")
         )
 
         card.pack(
             fill="x",
-            padx=10,
-            pady=10
+            padx=8,
+            pady=7
         )
 
         # =========================
@@ -464,8 +511,6 @@ class GameLauncher:
                 text="🎮",
                 font=("Arial",36)
             )
-
-        icon.pack(side="left")
 
         icon.pack(side="left")
 
@@ -546,8 +591,9 @@ class GameLauncher:
 
         ctk.CTkLabel(
             stats,
-            text=f"🚀 Launches: {launches}",
-            font=("Arial", 14)
+            text=f"🚀  {launches}",
+            font=("Arial", 16, "bold"),
+            text_color="#ffb000"
         ).pack(side="left", padx=5)
 
         ctk.CTkLabel(
@@ -576,6 +622,10 @@ class GameLauncher:
             text="▶ Play",
             width=120,
             height=38,
+            corner_radius=11,
+            font=("Arial", 13, "bold"),
+            fg_color="#00aa88",
+            hover_color="#00ccaa",
             command=lambda g=game: self.launch_game(g)
         ).pack(side="left", padx=5)
 
@@ -584,38 +634,30 @@ class GameLauncher:
             text="✏ Edit",
             width=100,
             height=38,
-            fg_color="#444444",
-            hover_color="#555555",
+            corner_radius=11,
+            font=("Arial", 13, "bold"),
+            fg_color="#3a3f42",
+            hover_color="#50575b",
             command=lambda g=game: self.edit_game(g)
         ).pack(side="left", padx=5)
 
-        ctk.CTkButton(
+        delete_button = ctk.CTkButton(
             buttons,
             text="🗑 Delete",
             width=100,
             height=38,
-            fg_color="#aa2222",
-            hover_color="#cc3333",
+            corner_radius=11,
+            font=("Arial", 13, "bold"),
+            fg_color="#9e2b35",
+            hover_color="#c63b46",
             command=lambda g=game: self.confirm_delete(g)
-        ).pack(side="right", padx=5)
-        # ==================================================
-        # ⭐ FAVORITE
-        # ==================================================
+        )
+        delete_button.pack(side="right", padx=5)
 
-        def toggle_favorite(self, game):
-
-            game["favorite"] = not game.get(
-                "favorite",
-                False
-            )
-
-            save_json(
-                "data/games.json",
-                self.games
-            )
-
-            self.render_games()
-
+        self._bind_card_hover(
+            card,
+            [top, info, icon, stats, buttons]
+        )
 
         # ==================================================
         # ✏ EDIT
@@ -749,7 +791,7 @@ class GameLauncher:
         else:
 
             self.last_game_label.configure(
-                text="🎮 Last Played : None"
+                text="None"
             )
         # ==========================
         # Statistics
