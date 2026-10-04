@@ -68,7 +68,7 @@ class TimerSystem:
         timer_card = ctk.CTkFrame(
             content,
             corner_radius=24,
-            border_width=2,
+            border_width=1,
             border_color="#00ffee"
         )
         timer_card.pack(
@@ -88,7 +88,7 @@ class TimerSystem:
         self.timer_label = ctk.CTkLabel(
             timer_card,
             text="25:00",
-            font=("Arial", 82, "bold"),
+            font=("Arial", 76, "bold"),
             text_color="#00ff88"
         )
         self.timer_label.pack(pady=(5, 10))
@@ -147,6 +147,8 @@ class TimerSystem:
             height=45,
             corner_radius=14,
             font=("Arial", 15, "bold"),
+            fg_color="#202727",
+            hover_color="#3a4545",
             command=self.reset_timer
         ).grid(row=0, column=2, padx=6)
 
@@ -154,7 +156,9 @@ class TimerSystem:
         settings_card = ctk.CTkFrame(
             content,
             width=300,
-            corner_radius=24
+            corner_radius=24,
+            border_width=1,
+            border_color="#252d2d"
         )
         settings_card.pack(
             side="right",
@@ -189,6 +193,8 @@ class TimerSystem:
                 text=label,
                 height=40,
                 corner_radius=12,
+                fg_color="#202727",
+                hover_color="#00aa88",
                 command=lambda m=minutes: self.set_minutes(m)
             ).grid(
                 row=index // 2,
