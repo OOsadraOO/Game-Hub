@@ -189,8 +189,10 @@ class App(ctk.CTk):
                 height=50,
                 corner_radius=14,
                 font=("Arial", 15, "bold"),
-                fg_color="#181b1b",
-                hover_color="#243030",
+                fg_color="#171c1c",
+                hover_color="#202b2b",
+                border_width=1,
+                border_color="#273131",
                 command=lambda p=page: self.show_page(p)
             )
 
@@ -429,8 +431,9 @@ class App(ctk.CTk):
                 )
             else:
                 button.configure(
-                    fg_color="#181b1b",
-                    hover_color="#243030"
+                    fg_color="#171c1c",
+                    hover_color="#202b2b",
+                    border_color="#273131"
                 )
 
 
