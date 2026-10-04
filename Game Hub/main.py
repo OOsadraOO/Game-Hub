@@ -6,7 +6,7 @@ import customtkinter as ctk
 
 from config import *
 from theme import animate_rgb
-from icons import get_icon
+from icons import get_icon, get_tk_icon
 
 from splash import SplashScreen
 
@@ -40,6 +40,9 @@ class App(ctk.CTk):
         # ==================================================
 
         self.title(APP_NAME)
+
+        self._window_icon = get_tk_icon("logo", 64)
+        self.iconphoto(False, self._window_icon)
 
         width = 1450
         height = 900
