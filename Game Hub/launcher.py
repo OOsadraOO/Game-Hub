@@ -23,6 +23,7 @@ class GameLauncher:
 
         self.app = app
         self.search_var = ctk.StringVar()
+        self.filter_var = ctk.StringVar(value="All Games")
         self.parent = parent
         self.icon_cache = {}
         
@@ -132,6 +133,20 @@ class GameLauncher:
             side="left",
             padx=5
         )
+        self.filter_menu = ctk.CTkOptionMenu(
+            header,
+            values=["All Games", "Favorites", "Recently Played", "Most Played"],
+            variable=self.filter_var,
+            width=165,
+            height=42,
+            corner_radius=12,
+            fg_color="#202727",
+            button_color="#00aa88",
+            button_hover_color="#00ccaa",
+            command=lambda _value: self.render_games()
+        )
+        self.filter_menu.pack(side="left", padx=5)
+
         # ==================================================
         # 📊 STATS CARDS
         # ==================================================
@@ -831,16 +846,45 @@ class GameLauncher:
 
         search = self.search_var.get().lower()
 
-        games = sorted(
-            self.games,
-            key=lambda g: not g.get("favorite", False)
-        )
+        games = list(self.games)
 
-        for game in games:
+        if self.filter_var.get() == "Favorites":
+            games = [game for game in games if game.get("favorite", False)]
+        elif self.filter_var.get() == "Recently Played":
+            games = [game for game in games if game.get("last_played")]
+            games.sort(key=lambda g: g.get("last_played", ""), reverse=True)
+        elif self.filter_var.get() == "Most Played":
+            games.sort(key=lambda g: self.stats.get(g["name"], 0), reverse=True)
+        else:
+            games.sort(key=lambda g: not g.get("favorite", False))
 
-            if search not in game["name"].lower():
-                continue
+        visible_games = [
+            game for game in games
+            if search in game["name"].lower()
+        ]
 
+        if not visible_games:
+            message = (
+                "No games match your search."
+                if search
+                else {
+                    "Favorites": "No favorite games yet.",
+                    "Recently Played": "No recently played games yet.",
+                    "Most Played": "No launch history yet."
+                }.get(
+                    self.filter_var.get(),
+                    "Your library is empty. Add a game to get started."
+                )
+            )
+            ctk.CTkLabel(
+                self.games_frame,
+                text=message,
+                font=("Arial", 16),
+                text_color="gray"
+            ).pack(pady=90)
+            return
+
+        for game in visible_games:
             self.create_game_card(game)
             
         
