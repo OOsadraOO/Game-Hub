@@ -3,6 +3,7 @@
 # ==================================================
 
 import customtkinter as ctk
+from icons import get_icon
 import subprocess
 import os
 import win32gui
@@ -98,7 +99,9 @@ class GameLauncher:
 
         ctk.CTkLabel(
             self.parent,
-            text="🎮 Game Launcher",
+            text="Game Launcher",
+            image=get_icon("launcher", 34),
+            compound="left",
             font=("Arial", 32, "bold"),
             text_color="#00ffee"
         ).pack(
@@ -131,7 +134,7 @@ class GameLauncher:
 
             textvariable=self.search_var,
 
-            placeholder_text="🔍  Search games..."
+            placeholder_text="Search games..."
         )
 
         self.search_entry.pack(
@@ -188,7 +191,7 @@ class GameLauncher:
 
         ctk.CTkLabel(
             games_card,
-            text="🎮 Games",
+            text="Games",
             font=("Arial",12)
         ).pack(pady=(8,0))
 
@@ -223,7 +226,7 @@ class GameLauncher:
 
         ctk.CTkLabel(
             launch_card,
-            text="🚀 Launches",
+            text="Launches",
             font=("Arial",12)
         ).pack(pady=(8,0))
 
@@ -256,7 +259,7 @@ class GameLauncher:
 
         ctk.CTkLabel(
             favorite_card,
-            text="⭐ Favorites",
+            text="Favorites",
             font=("Arial",12)
         ).pack(pady=(8,0))
 
@@ -291,7 +294,7 @@ class GameLauncher:
 
         ctk.CTkLabel(
             last_card,
-            text="🕒 Last Played",
+            text="Last Played",
             font=("Arial",12)
         ).pack(pady=(8,0))
 
@@ -315,7 +318,9 @@ class GameLauncher:
 
             header,
 
-            text="➕ Add Game",
+            text="Add Game",
+            image=get_icon("add", 18),
+            compound="left",
 
             width=145,
 
@@ -337,7 +342,8 @@ class GameLauncher:
 
             header,
 
-            text="↻",
+            text="",
+            image=get_icon("refresh", 20),
 
             width=46,
 
