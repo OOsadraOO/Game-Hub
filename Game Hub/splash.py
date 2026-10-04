@@ -3,7 +3,7 @@
 # ==================================================
 
 import customtkinter as ctk
-import tkinter as tk
+from icons import get_icon
 import time
 
 
@@ -52,58 +52,18 @@ class SplashScreen(ctk.CTkToplevel):
         )
         logo_frame.pack(pady=(42, 16))
 
-        icon = tk.Canvas(
+        ctk.CTkLabel(
             logo_frame,
-            width=92,
-            height=72,
-            bg="#111111",
-            highlightthickness=0
-        )
-        icon.pack()
-
-        # Clean geometric GameHub gamepad mark.
-        icon.create_rectangle(
-            16, 18, 76, 56,
-            outline="#00ffee",
-            width=3
-        )
-        icon.create_oval(
-            8, 24, 28, 55,
-            outline="#00ffee",
-            width=3
-        )
-        icon.create_oval(
-            64, 24, 84, 55,
-            outline="#00ffee",
-            width=3
-        )
-        icon.create_line(
-            28, 37, 42, 37,
-            fill="#00ffee",
-            width=4
-        )
-        icon.create_line(
-            35, 30, 35, 44,
-            fill="#00ffee",
-            width=4
-        )
-        icon.create_oval(
-            57, 31, 63, 37,
-            fill="#00ff88",
-            outline=""
-        )
-        icon.create_oval(
-            67, 39, 73, 45,
-            fill="#00ff88",
-            outline=""
-        )
+            image=get_icon("logo", 72),
+            text=""
+        ).pack(pady=(0, 6))
 
         ctk.CTkLabel(
             logo_frame,
             text="GAMEHUB",
             font=("Arial", 40, "bold"),
             text_color="#00ffee"
-        ).pack(pady=(2, 0))
+        ).pack()
 
         # ==================================================
         # 📊 BAR
