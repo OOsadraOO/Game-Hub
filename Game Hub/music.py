@@ -31,6 +31,7 @@ class MusicPlayer:
         self.volume = 0.5
         self.track_length = 0.0
         self.user_seeking = False
+        self.has_started_playback = False
 
         self.build_ui()
         self.render_playlist()
@@ -318,6 +319,7 @@ class MusicPlayer:
         self.current_music = path
         self.current_index = index
         self.is_paused = False
+        self.has_started_playback = autoplay
 
         self.music_name_label.configure(text=os.path.basename(path))
         self.status_label.configure(text="Playing" if autoplay else "Selected", text_color="#00ff88")
@@ -355,6 +357,8 @@ class MusicPlayer:
         try:
             pygame.mixer.music.load(self.current_music)
             pygame.mixer.music.play()
+            self.is_paused = False
+            self.has_started_playback = True
             self.status_label.configure(text="Playing", text_color="#00ff88")
         except pygame.error:
             self.status_label.configure(text="Unable to play this file.", text_color="#ff6666")
@@ -366,6 +370,7 @@ class MusicPlayer:
         if self.is_paused:
             pygame.mixer.music.unpause()
             self.is_paused = False
+            self.has_started_playback = True
             self.status_label.configure(text="Playing", text_color="#00ff88")
         else:
             pygame.mixer.music.pause()
@@ -381,6 +386,7 @@ class MusicPlayer:
     def stop_music(self):
         pygame.mixer.music.stop()
         self.is_paused = False
+        self.has_started_playback = False
         if self.current_music:
             self.status_label.configure(text="Stopped", text_color="gray")
 
@@ -415,6 +421,7 @@ class MusicPlayer:
             self.current_music = ""
             self.current_index = -1
             self.is_paused = False
+            self.has_started_playback = False
             self.music_name_label.configure(text="No music selected")
             self.status_label.configure(text="Ready", text_color="gray")
         elif deleted_index < self.current_index:
@@ -477,7 +484,25 @@ class MusicPlayer:
     def update_timeline(self):
         if self.current_music and not self.user_seeking and not self.is_paused and self.track_length > 0:
             position = pygame.mixer.music.get_pos() / 1000.0
-            position = max(0.0, min(position, self.track_length))
-            self.timeline_slider.set(position)
-            self.current_time_label.configure(text=self.format_time(position))
+
+            if self.has_started_playback and not pygame.mixer.music.get_busy():
+                if self.repeat:
+                    self.select_music(self.current_music, self.current_index)
+                    return
+
+                if len(self.music_list) > 1:
+                    self.next_music()
+                    return
+
+                self.has_started_playback = False
+                self.status_label.configure(text="Finished", text_color="gray")
+                self.timeline_slider.set(self.track_length)
+                self.current_time_label.configure(
+                    text=self.format_time(self.track_length)
+                )
+            else:
+                position = max(0.0, min(position, self.track_length))
+                self.timeline_slider.set(position)
+                self.current_time_label.configure(text=self.format_time(position))
+
         self.parent.after(400, self.update_timeline)
