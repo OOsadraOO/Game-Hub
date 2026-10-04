@@ -454,19 +454,17 @@ class HomePage:
 
         ctk.CTkLabel(
             weather_frame,
-            text="🌤 Weather",
+            text="🕒 Recently Played",
             font=("Arial", 22, "bold")
-        ).pack(
-            pady=10
-        )
+        ).pack(pady=(10, 6))
 
-        ctk.CTkLabel(
+        self.recent_games_frame = ctk.CTkFrame(
             weather_frame,
-            text="Coming Soon",
-            font=("Arial", 18)
-        ).pack(
-            pady=15
+            fg_color="transparent"
         )
+        self.recent_games_frame.pack(fill="both", expand=True, padx=18, pady=(0, 12))
+
+        self.render_recent_games()
 
     # ==================================================
     # CLOCK
@@ -490,6 +488,55 @@ class HomePage:
     # ==================================================
     # PERFORMANCE
     # ==================================================
+
+    def render_recent_games(self):
+
+        if not hasattr(self, "recent_games_frame"):
+            return
+
+        for widget in self.recent_games_frame.winfo_children():
+            widget.destroy()
+
+        games = load_json("data/games.json") or []
+        recent = [
+            game for game in games
+            if game.get("last_played")
+        ]
+        recent.sort(
+            key=lambda game: game.get("last_played", ""),
+            reverse=True
+        )
+
+        if not recent:
+            ctk.CTkLabel(
+                self.recent_games_frame,
+                text="No games played yet.",
+                font=("Arial", 13),
+                text_color="gray"
+            ).pack(pady=18)
+            return
+
+        for game in recent[:4]:
+            row = ctk.CTkFrame(
+                self.recent_games_frame,
+                corner_radius=10,
+                fg_color="#181b1b"
+            )
+            row.pack(fill="x", pady=3)
+
+            ctk.CTkLabel(
+                row,
+                text=game.get("name", "Unknown"),
+                font=("Arial", 12, "bold"),
+                anchor="w"
+            ).pack(side="left", padx=12, pady=7)
+
+            ctk.CTkLabel(
+                row,
+                text=game.get("last_played", "")[-8:],
+                font=("Arial", 10),
+                text_color="gray"
+            ).pack(side="right", padx=12)
 
     def update_performance(self):
 
@@ -528,6 +575,8 @@ class HomePage:
             self.tasks_count.configure(text=str(len(tasks)))
         except Exception:
             pass
+
+        self.render_recent_games()
 
         self.parent.after(1200, self.update_performance)
 
