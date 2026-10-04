@@ -3,6 +3,7 @@
 # ==================================================
 
 import customtkinter as ctk
+from icons import get_icon
 import psutil
 import random
 from performance import get_gpu_usage, get_gpu_name
@@ -63,7 +64,9 @@ class HomePage:
 
         ctk.CTkButton(
             top_frame,
-            text="🎮 Session",
+            text="Session",
+            image=get_icon("session", 20),
+            compound="left",
             width=115,
             height=42,
             corner_radius=12,
@@ -75,7 +78,8 @@ class HomePage:
 
         ctk.CTkButton(
             top_frame,
-            text="⚙",
+            text="",
+            image=get_icon("settings", 20),
             width=48,
             height=42,
             corner_radius=12,
@@ -325,7 +329,9 @@ class HomePage:
 
         ctk.CTkLabel(
             performance_header,
-            text="📈 Live System Monitor",
+            text="Live System Monitor",
+            image=get_icon("monitor", 22),
+            compound="left",
             font=("Arial", 22, "bold")
         ).pack(side="left")
 
@@ -386,6 +392,8 @@ class HomePage:
         ctk.CTkLabel(
             quote_frame,
             text="Daily Quote",
+            image=get_icon("quote", 22),
+            compound="left",
             font=("Arial", 22, "bold")
         ).pack(
             pady=(8, 4)
@@ -424,7 +432,7 @@ class HomePage:
 
         ctk.CTkLabel(
             quick_frame,
-            text="⚡ Quick Actions",
+            text="Quick Actions",
             font=("Arial", 18, "bold")
         ).pack(pady=(10, 7))
 
@@ -443,15 +451,17 @@ class HomePage:
         quick_buttons.grid_rowconfigure(0, weight=1)
 
         quick_actions = (
-            ("▶  Session", lambda: GamingSessionWindow(self.app)),
-            ("▦  Statistics", lambda: self.app.show_page("stats")),
-            ("♫  Music", lambda: self.app.show_page("music"))
+            ("Session", "session", lambda: GamingSessionWindow(self.app)),
+            ("Statistics", "stats", lambda: self.app.show_page("stats")),
+            ("Music", "music", lambda: self.app.show_page("music"))
         )
 
-        for column, (label, command) in enumerate(quick_actions):
+        for column, (label, icon_name, command) in enumerate(quick_actions):
             ctk.CTkButton(
                 quick_buttons,
                 text=label,
+                image=get_icon(icon_name, 18),
+                compound="left",
                 height=54,
                 corner_radius=12,
                 fg_color="#202727",
