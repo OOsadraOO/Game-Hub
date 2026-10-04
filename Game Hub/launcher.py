@@ -184,7 +184,7 @@ class GameLauncher:
 
         games_card = ctk.CTkFrame(
             stats_frame,
-            width=125,
+            width=155,
             height=72,
             corner_radius=16,
             border_width=1,
@@ -254,8 +254,8 @@ class GameLauncher:
 
         favorite_card = ctk.CTkFrame(
             stats_frame,
-            width=120,
-            height=70,
+            width=155,
+            height=72,
             corner_radius=15,
             fg_color="#1b1b1b"
         )
