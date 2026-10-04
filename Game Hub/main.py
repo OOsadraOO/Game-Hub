@@ -14,6 +14,7 @@ from launcher import GameLauncher
 from music import MusicPlayer
 from timer import TimerSystem
 from todo import TodoSystem
+from stats import StatsPage
 
 # ==================================================
 # 🎨 CUSTOMTKINTER
@@ -167,7 +168,8 @@ class App(ctk.CTk):
             ("🎮 Launcher", "launcher"),
             ("🎵 Music", "music"),
             ("⏱ Timer", "timer"),
-            ("📝 To-Do", "todo")
+            ("📝 To-Do", "todo"),
+            ("📊 Stats", "stats")
 
         ]
 
@@ -307,11 +309,26 @@ class App(ctk.CTk):
             self.pages["todo"]
         )
 
+        # STATS
+
+        self.pages["stats"] = ctk.CTkFrame(
+            self.container,
+            fg_color="#111111"
+        )
+
+        StatsPage(
+            self,
+            self.pages["stats"]
+        )
+
         # ==================================================
         # START PAGE
         # ==================================================
 
         self.show_page("home")
+
+        # Command Palette
+        self.bind("<Control-k>", self.open_command_palette)
 
         # ==================================================
         # RGB EFFECT
