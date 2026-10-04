@@ -7,6 +7,10 @@ try:
 except ImportError:
     win32pdh = None
 
+_gpu_usage_cache = None
+_gpu_usage_cache_time = 0.0
+_gpu_name_cache = None
+
 
 def _clamp(value):
     return max(0.0, min(100.0, float(value)))
@@ -106,16 +110,33 @@ def _get_gpu_usage_powershell():
 
 
 def get_gpu_usage():
+    global _gpu_usage_cache, _gpu_usage_cache_time
+
     value = _get_gpu_usage_pdh()
 
     if value is not None:
+        _gpu_usage_cache = value
+        _gpu_usage_cache_time = time.time()
         return value
 
-    return _get_gpu_usage_powershell()
+    # Avoid launching PowerShell on every UI refresh.
+    now = time.time()
+    if now - _gpu_usage_cache_time < 2.0:
+        return _gpu_usage_cache
+
+    value = _get_gpu_usage_powershell()
+    _gpu_usage_cache = value
+    _gpu_usage_cache_time = now
+    return value
 
 
 def get_gpu_name():
     """Return the primary Windows display adapter name when available."""
+    global _gpu_name_cache
+
+    if _gpu_name_cache:
+        return _gpu_name_cache
+
     try:
         result = subprocess.run(
             [
@@ -134,11 +155,12 @@ def get_gpu_name():
         if result.returncode == 0:
             name = result.stdout.strip()
             if name:
-                return name
+                _gpu_name_cache = name
+                return _gpu_name_cache
     except Exception:
         pass
 
-    return None
+    return _gpu_name_cache
 
 
 def get_system_snapshot():
