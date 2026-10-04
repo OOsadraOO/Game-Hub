@@ -1,13 +1,15 @@
 # ==================================================
-# 🎨 GAMEHUB ICON SYSTEM
+# GAMEHUB — CLEAN VECTOR ICON SYSTEM
 # ==================================================
 
 from functools import lru_cache
 from PIL import Image, ImageDraw, ImageTk
 import customtkinter as ctk
+import math
 
 ACCENT = "#00ffee"
 GREEN = "#00ff88"
+_SCALE = 4
 
 
 def _line(draw, pts, fill, width):
@@ -15,123 +17,183 @@ def _line(draw, pts, fill, width):
 
 
 def _draw(draw, kind, s, color):
-    import math
-    w = max(2, round(s / 9))
-    m = s * 0.18
+    w = max(3, round(s / 8))
+    m = s * 0.20
     cx = s / 2
     cy = s / 2
 
     if kind == "home":
-        _line(draw, [(m, s*.48), (cx, m), (s-m, s*.48)], color, w)
-        draw.rectangle((s*.27, s*.46, s*.73, s*.82), outline=color, width=w)
-        draw.rectangle((s*.45, s*.61, s*.55, s*.82), outline=color, width=w)
+        _line(draw, [(s*.18, s*.46), (cx, s*.18), (s*.82, s*.46)], color, w)
+        draw.rounded_rectangle(
+            (s*.27, s*.43, s*.73, s*.82),
+            radius=int(s*.05),
+            outline=color,
+            width=w
+        )
+        draw.rectangle((s*.45, s*.61, s*.55, s*.82), fill=color)
 
     elif kind in ("launcher", "logo"):
-        draw.rounded_rectangle((m, s*.34, s-m, s*.72), radius=int(s*.16), outline=color, width=w)
-        draw.ellipse((s*.10, s*.30, s*.34, s*.70), outline=color, width=w)
-        draw.ellipse((s*.66, s*.30, s*.90, s*.70), outline=color, width=w)
-        _line(draw, [(s*.25, cy), (s*.43, cy)], color, w)
-        _line(draw, [(s*.34, s*.41), (s*.34, s*.59)], color, w)
-        draw.ellipse((s*.62, s*.47, s*.68, s*.53), fill=GREEN)
-        draw.ellipse((s*.72, s*.57, s*.78, s*.63), fill=GREEN)
+        # Simple, unmistakable gamepad. No decorative intersections.
+        draw.rounded_rectangle(
+            (s*.16, s*.34, s*.84, s*.70),
+            radius=int(s*.15),
+            outline=color,
+            width=w
+        )
+        # D-pad
+        _line(draw, [(s*.31, s*.43), (s*.31, s*.61)], color, w)
+        _line(draw, [(s*.22, s*.52), (s*.40, s*.52)], color, w)
+        # Buttons
+        draw.ellipse((s*.61, s*.43, s*.68, s*.50), fill=GREEN)
+        draw.ellipse((s*.71, s*.53, s*.78, s*.60), fill=GREEN)
 
     elif kind == "music":
-        _line(draw, [(s*.60, s*.20), (s*.60, s*.67)], color, w)
-        _line(draw, [(s*.60, s*.20), (s*.82, s*.16)], color, w)
-        draw.ellipse((s*.25, s*.60, s*.48, s*.80), outline=color, width=w)
-        draw.ellipse((s*.49, s*.54, s*.72, s*.74), outline=color, width=w)
-        _line(draw, [(s*.37, s*.70), (s*.60, s*.64)], color, w)
+        _line(draw, [(s*.61, s*.20), (s*.61, s*.66)], color, w)
+        _line(draw, [(s*.61, s*.20), (s*.80, s*.16)], color, w)
+        draw.ellipse((s*.43, s*.60, s*.61, s*.77), fill=color)
+        _line(draw, [(s*.61, s*.49), (s*.43, s*.60)], color, w)
 
     elif kind == "timer":
-        draw.ellipse((m, s*.24, s-m, s*.88), outline=color, width=w)
-        _line(draw, [(cx, s*.44), (cx, s*.60), (s*.62, s*.67)], color, w)
-        _line(draw, [(s*.42, s*.14), (s*.58, s*.14)], color, w)
-        _line(draw, [(cx, s*.08), (cx, s*.16)], color, w)
+        draw.ellipse((s*.22, s*.28, s*.78, s*.84), outline=color, width=w)
+        _line(draw, [(cx, s*.44), (cx, s*.57), (s*.63, s*.64)], color, w)
+        draw.rounded_rectangle((s*.43, s*.16, s*.57, s*.25), radius=int(s*.03), fill=color)
 
     elif kind == "todo":
-        draw.rounded_rectangle((s*.22, s*.16, s*.78, s*.84), radius=int(s*.06), outline=color, width=w)
-        _line(draw, [(s*.33,s*.51),(s*.43,s*.61),(s*.67,s*.35)], color, w)
+        draw.rounded_rectangle(
+            (s*.24, s*.18, s*.76, s*.82),
+            radius=int(s*.07),
+            outline=color,
+            width=w
+        )
+        _line(draw, [(s*.34, s*.51), (s*.44, s*.61), (s*.66, s*.38)], color, w)
 
     elif kind == "stats":
-        _line(draw, [(s*.22,s*.80),(s*.22,s*.55),(s*.40,s*.55),(s*.40,s*.38),(s*.58,s*.38),(s*.58,s*.22),(s*.78,s*.22)], color, w)
+        # Three clean bars, increasing in height.
+        draw.rounded_rectangle((s*.20, s*.56, s*.36, s*.80), radius=int(s*.025), fill=color)
+        draw.rounded_rectangle((s*.42, s*.40, s*.58, s*.80), radius=int(s*.025), fill=color)
+        draw.rounded_rectangle((s*.64, s*.22, s*.80, s*.80), radius=int(s*.025), fill=color)
 
     elif kind == "session":
-        _line(draw, [(s*.26,s*.66),(s*.26,s*.38),(s*.46,s*.38),(s*.46,s*.66)], color, w)
-        _line(draw, [(s*.54,s*.66),(s*.54,s*.38),(s*.74,s*.38),(s*.74,s*.66)], color, w)
-        _line(draw, [(s*.38,s*.76),(s*.62,s*.76)], color, w)
+        # Controller + clock, kept deliberately minimal.
+        draw.rounded_rectangle(
+            (s*.16, s*.36, s*.70, s*.70),
+            radius=int(s*.14),
+            outline=color,
+            width=w
+        )
+        _line(draw, [(s*.31, s*.44), (s*.31, s*.62)], color, w)
+        _line(draw, [(s*.23, s*.53), (s*.39, s*.53)], color, w)
+        draw.ellipse((s*.48, s*.45, s*.55, s*.52), fill=GREEN)
+        draw.ellipse((s*.57, s*.55, s*.64, s*.62), fill=GREEN)
+        draw.ellipse((s*.60, s*.60, s*.86, s*.86), outline=color, width=w)
+        _line(draw, [(s*.73, s*.67), (s*.73, s*.74), (s*.78, s*.77)], color, w)
 
     elif kind == "settings":
-        draw.ellipse((s*.28,s*.28,s*.72,s*.72), outline=color, width=w)
-        draw.ellipse((s*.43,s*.43,s*.57,s*.57), outline=color, width=w)
-        for a in range(0,360,60):
-            x1=cx+math.cos(math.radians(a))*s*.30
-            y1=cy+math.sin(math.radians(a))*s*.30
-            x2=cx+math.cos(math.radians(a))*s*.44
-            y2=cy+math.sin(math.radians(a))*s*.44
-            _line(draw,[(x1,y1),(x2,y2)],color,w)
+        # Eight short teeth + clear center hole.
+        draw.ellipse((s*.27, s*.27, s*.73, s*.73), outline=color, width=w)
+        draw.ellipse((s*.43, s*.43, s*.57, s*.57), outline=color, width=w)
+        for a in range(0, 360, 45):
+            r1, r2 = s*.36, s*.46
+            x1 = cx + math.cos(math.radians(a)) * r1
+            y1 = cy + math.sin(math.radians(a)) * r1
+            x2 = cx + math.cos(math.radians(a)) * r2
+            y2 = cy + math.sin(math.radians(a)) * r2
+            _line(draw, [(x1, y1), (x2, y2)], color, w)
 
     elif kind == "search":
-        draw.ellipse((s*.22,s*.20,s*.62,s*.60), outline=color, width=w)
-        _line(draw,[(s*.54,s*.54),(s*.80,s*.80)],color,w)
+        draw.ellipse((s*.20, s*.18, s*.61, s*.59), outline=color, width=w)
+        _line(draw, [(s*.53, s*.53), (s*.80, s*.80)], color, w)
 
     elif kind == "add":
-        draw.ellipse((s*.18,s*.18,s*.82,s*.82), outline=color, width=w)
-        _line(draw,[(cx,s*.34),(cx,s*.66)],color,w)
-        _line(draw,[(s*.34,cy),(s*.66,cy)],color,w)
+        draw.ellipse((s*.18, s*.18, s*.82, s*.82), outline=color, width=w)
+        _line(draw, [(cx, s*.34), (cx, s*.66)], color, w)
+        _line(draw, [(s*.34, cy), (s*.66, cy)], color, w)
 
     elif kind == "refresh":
-        draw.arc((s*.20,s*.20,s*.80,s*.80), 20, 300, fill=color, width=w)
-        _line(draw,[(s*.76,s*.40),(s*.76,s*.22),(s*.58,s*.22)],color,w)
-        _line(draw,[(s*.24,s*.60),(s*.24,s*.78),(s*.42,s*.78)],color,w)
+        draw.arc((s*.20, s*.20, s*.80, s*.80), 35, 305, fill=color, width=w)
+        draw.polygon(
+            [(s*.73, s*.24), (s*.82, s*.24), (s*.82, s*.33)],
+            fill=color
+        )
 
     elif kind == "play":
-        draw.rounded_rectangle((s*.18,s*.18,s*.82,s*.82),radius=int(s*.10),outline=color,width=w)
-        draw.polygon([(s*.43,s*.34),(s*.43,s*.66),(s*.68,s*.50)],outline=color)
+        draw.rounded_rectangle(
+            (s*.18, s*.18, s*.82, s*.82),
+            radius=int(s*.10),
+            outline=color,
+            width=w
+        )
+        draw.polygon(
+            [(s*.44, s*.35), (s*.44, s*.65), (s*.68, cy)],
+            fill=color
+        )
 
     elif kind == "edit":
-        _line(draw,[(s*.26,s*.72),(s*.34,s*.48),(s*.66,s*.20)],color,w)
-        _line(draw,[(s*.37,s*.75),(s*.70,s*.42)],color,w)
-        _line(draw,[(s*.24,s*.76),(s*.42,s*.72)],color,w)
+        _line(draw, [(s*.25, s*.73), (s*.34, s*.47), (s*.67, s*.20)], color, w)
+        _line(draw, [(s*.37, s*.75), (s*.71, s*.41)], color, w)
+        _line(draw, [(s*.24, s*.76), (s*.42, s*.72)], color, w)
 
     elif kind == "delete":
-        draw.rectangle((s*.30,s*.30,s*.70,s*.78),outline=color,width=w)
-        _line(draw,[(s*.24,s*.25),(s*.76,s*.25)],color,w)
-        _line(draw,[(s*.42,s*.17),(s*.58,s*.17)],color,w)
+        draw.rounded_rectangle(
+            (s*.30, s*.30, s*.70, s*.79),
+            radius=int(s*.04),
+            outline=color,
+            width=w
+        )
+        _line(draw, [(s*.23, s*.25), (s*.77, s*.25)], color, w)
+        _line(draw, [(s*.42, s*.17), (s*.58, s*.17)], color, w)
 
     elif kind == "star":
-        pts=[]
+        pts = []
         for i in range(10):
-            a=-math.pi/2+i*math.pi/5
-            rad=s*.34 if i%2==0 else s*.14
-            pts.append((cx+math.cos(a)*rad,cy+math.sin(a)*rad))
-        draw.polygon(pts,outline=color)
+            a = -math.pi / 2 + i * math.pi / 5
+            r = s*.36 if i % 2 == 0 else s*.16
+            pts.append((cx + math.cos(a)*r, cy + math.sin(a)*r))
+        draw.polygon(pts, outline=color, width=w)
 
     elif kind == "quote":
-        draw.rounded_rectangle((s*.16,s*.18,s*.84,s*.74),radius=int(s*.10),outline=color,width=w)
-        _line(draw,[(s*.34,s*.74),(s*.30,s*.88),(s*.48,s*.74)],color,w)
-        draw.ellipse((s*.31,s*.42,s*.38,s*.49),fill=color)
-        draw.ellipse((s*.47,s*.42,s*.54,s*.49),fill=color)
+        draw.rounded_rectangle(
+            (s*.16, s*.18, s*.84, s*.72),
+            radius=int(s*.10),
+            outline=color,
+            width=w
+        )
+        _line(draw, [(s*.30, s*.72), (s*.27, s*.86), (s*.45, s*.72)], color, w)
+        draw.ellipse((s*.33, s*.39, s*.40, s*.46), fill=color)
+        draw.ellipse((s*.51, s*.39, s*.58, s*.46), fill=color)
 
     elif kind == "monitor":
-        draw.rounded_rectangle((s*.16,s*.18,s*.84,s*.68),radius=int(s*.06),outline=color,width=w)
-        _line(draw,[(s*.38,s*.82),(s*.62,s*.82)],color,w)
-        _line(draw,[(cx,s*.68),(cx,s*.82)],color,w)
+        draw.rounded_rectangle(
+            (s*.16, s*.18, s*.84, s*.68),
+            radius=int(s*.06),
+            outline=color,
+            width=w
+        )
+        _line(draw, [(cx, s*.68), (cx, s*.82)], color, w)
+        _line(draw, [(s*.38, s*.82), (s*.62, s*.82)], color, w)
 
     else:
-        draw.ellipse((s*.25,s*.25,s*.75,s*.75),outline=color,width=w)
+        draw.ellipse((s*.25, s*.25, s*.75, s*.75), outline=color, width=w)
+
+
+def _make_image(kind, size, color):
+    size = int(size)
+    render_size = max(64, size * _SCALE)
+    img = Image.new("RGBA", (render_size, render_size), (0, 0, 0, 0))
+    _draw(ImageDraw.Draw(img), kind, render_size, color)
+    if render_size != size:
+        img = img.resize((size, size), Image.Resampling.LANCZOS)
+    return img
 
 
 @lru_cache(maxsize=64)
 def get_icon(kind, size=24, color=ACCENT):
     size = int(size)
-    img = Image.new("RGBA", (size, size), (0,0,0,0))
-    _draw(ImageDraw.Draw(img), kind, size, color)
-    return ctk.CTkImage(light_image=img, dark_image=img, size=(size,size))
+    img = _make_image(kind, size, color)
+    return ctk.CTkImage(light_image=img, dark_image=img, size=(size, size))
 
 
 @lru_cache(maxsize=16)
 def get_tk_icon(kind, size=64, color=ACCENT):
     size = int(size)
-    img = Image.new("RGBA", (size, size), (0,0,0,0))
-    _draw(ImageDraw.Draw(img), kind, size, color)
-    return ImageTk.PhotoImage(img)
+    return ImageTk.PhotoImage(_make_image(kind, size, color))
