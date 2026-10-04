@@ -44,7 +44,8 @@ class MusicPlayer:
         ctk.CTkLabel(
             header,
             text="🎵  Music Player",
-            font=("Arial", 32, "bold")
+            font=("Arial", 32, "bold"),
+            text_color="#00ffee"
         ).pack(side="left")
 
         self.track_count_label = ctk.CTkLabel(
@@ -61,7 +62,7 @@ class MusicPlayer:
         now_card = ctk.CTkFrame(
             content,
             corner_radius=24,
-            border_width=2,
+            border_width=1,
             border_color="#00ffee"
         )
         now_card.pack(side="left", fill="both", expand=True, padx=(0, 10))
@@ -132,9 +133,11 @@ class MusicPlayer:
                 controls,
                 text=text,
                 width=width,
-                height=44,
-                corner_radius=13,
+                height=46,
+                corner_radius=14,
                 font=("Arial", 16, "bold"),
+                fg_color="#202727",
+                hover_color="#00aa88",
                 command=command
             ).grid(row=0, column=column, padx=4)
 
@@ -147,6 +150,8 @@ class MusicPlayer:
             width=145,
             height=38,
             corner_radius=12,
+            fg_color="#202727",
+            hover_color="#00aa88",
             command=self.toggle_shuffle
         )
         self.shuffle_button.grid(row=0, column=0, padx=5)
@@ -157,6 +162,8 @@ class MusicPlayer:
             width=145,
             height=38,
             corner_radius=12,
+            fg_color="#202727",
+            hover_color="#00aa88",
             command=self.toggle_repeat
         )
         self.repeat_button.grid(row=0, column=1, padx=5)
@@ -180,7 +187,9 @@ class MusicPlayer:
         playlist_card = ctk.CTkFrame(
             content,
             width=380,
-            corner_radius=24
+            corner_radius=24,
+            border_width=1,
+            border_color="#252d2d"
         )
         playlist_card.pack(side="right", fill="y", padx=(10, 0))
         playlist_card.pack_propagate(False)
@@ -265,18 +274,23 @@ class MusicPlayer:
             row = ctk.CTkFrame(
                 self.playlist_frame,
                 corner_radius=14,
-                fg_color=("gray20" if selected else "transparent")
+                fg_color=("#19302d" if selected else "#151818"),
+                border_width=1,
+                border_color=("#00aa88" if selected else "#242b2b")
             )
             row.pack(fill="x", pady=4)
 
-            ctk.CTkButton(
+            play_row_button = ctk.CTkButton(
                 row,
                 text="▶",
                 width=38,
                 height=34,
                 corner_radius=10,
+                fg_color="#00aa88" if selected else "#202727",
+                hover_color="#00ccaa",
                 command=lambda p=path, i=index: self.select_music(p, i)
-            ).pack(side="left", padx=(7, 5), pady=7)
+            )
+            play_row_button.pack(side="left", padx=(7, 5), pady=7)
 
             ctk.CTkLabel(
                 row,
