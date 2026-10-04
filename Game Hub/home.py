@@ -65,7 +65,7 @@ class HomePage:
         ctk.CTkButton(
             top_frame,
             text="Session",
-            image=get_icon("session", 20),
+            image=get_icon("session", 18),
             compound="left",
             width=115,
             height=42,
@@ -79,7 +79,7 @@ class HomePage:
         ctk.CTkButton(
             top_frame,
             text="",
-            image=get_icon("settings", 20),
+            image=get_icon("settings", 18),
             width=48,
             height=42,
             corner_radius=12,
@@ -330,7 +330,7 @@ class HomePage:
         ctk.CTkLabel(
             performance_header,
             text="Live System Monitor",
-            image=get_icon("monitor", 22),
+            image=get_icon("monitor", 20),
             compound="left",
             font=("Arial", 22, "bold")
         ).pack(side="left")
@@ -392,7 +392,7 @@ class HomePage:
         ctk.CTkLabel(
             quote_frame,
             text="Daily Quote",
-            image=get_icon("quote", 22),
+            image=get_icon("quote", 20),
             compound="left",
             font=("Arial", 22, "bold")
         ).pack(
@@ -460,7 +460,7 @@ class HomePage:
             ctk.CTkButton(
                 quick_buttons,
                 text=label,
-                image=get_icon(icon_name, 18),
+                image=get_icon(icon_name, 17),
                 compound="left",
                 height=54,
                 corner_radius=12,
