@@ -26,7 +26,8 @@ class TodoSystem:
         ctk.CTkLabel(
             header,
             text="📝  To-Do",
-            font=("Arial", 32, "bold")
+            font=("Arial", 32, "bold"),
+            text_color="#00ffee"
         ).pack(side="left")
 
         self.count_label = ctk.CTkLabel(
@@ -37,7 +38,12 @@ class TodoSystem:
         )
         self.count_label.pack(side="right", pady=8)
 
-        add_card = ctk.CTkFrame(self.parent, corner_radius=20)
+        add_card = ctk.CTkFrame(
+            self.parent,
+            corner_radius=20,
+            border_width=1,
+            border_color="#252d2d"
+        )
         add_card.pack(fill="x", padx=32, pady=(8, 12))
 
         self.task_entry = ctk.CTkEntry(
@@ -61,6 +67,9 @@ class TodoSystem:
             width=120,
             height=44,
             corner_radius=12,
+            fg_color="#00aa88",
+            hover_color="#00ccaa",
+            font=("Arial", 13, "bold"),
             command=self.add_task
         ).pack(side="right", padx=(8, 16), pady=16)
 
@@ -75,6 +84,8 @@ class TodoSystem:
                 width=100,
                 height=36,
                 corner_radius=10,
+                fg_color="#00aa88" if mode == self.filter_mode else "transparent",
+                hover_color="#00aa88",
                 command=lambda m=mode: self.set_filter(m)
             )
             button.pack(side="left", padx=(0, 7))
@@ -91,7 +102,9 @@ class TodoSystem:
 
         self.tasks_frame = ctk.CTkScrollableFrame(
             self.parent,
-            corner_radius=18
+            corner_radius=18,
+            border_width=1,
+            border_color="#252d2d"
         )
         self.tasks_frame.pack(
             fill="both",
@@ -162,7 +175,9 @@ class TodoSystem:
     def create_task_row(self, index, task, is_completed):
         row = ctk.CTkFrame(
             self.tasks_frame,
-            corner_radius=15
+            corner_radius=15,
+            border_width=1,
+            border_color="#242b2b"
         )
         row.pack(fill="x", pady=5)
 
@@ -193,7 +208,7 @@ class TodoSystem:
             height=32,
             corner_radius=9,
             fg_color="transparent",
-            hover_color="#7a2020",
+            hover_color="#9e2b35",
             command=lambda i=index: self.delete_task(i)
         ).pack(side="right", padx=12)
 
