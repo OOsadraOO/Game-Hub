@@ -3,7 +3,7 @@
 # ==================================================
 
 from functools import lru_cache
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageTk
 import customtkinter as ctk
 
 ACCENT = "#00ffee"
@@ -127,3 +127,11 @@ def get_icon(kind, size=24, color=ACCENT):
     img = Image.new("RGBA", (size, size), (0,0,0,0))
     _draw(ImageDraw.Draw(img), kind, size, color)
     return ctk.CTkImage(light_image=img, dark_image=img, size=(size,size))
+
+
+@lru_cache(maxsize=16)
+def get_tk_icon(kind, size=64, color=ACCENT):
+    size = int(size)
+    img = Image.new("RGBA", (size, size), (0,0,0,0))
+    _draw(ImageDraw.Draw(img), kind, size, color)
+    return ImageTk.PhotoImage(img)
