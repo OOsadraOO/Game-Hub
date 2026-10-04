@@ -436,16 +436,16 @@ class HomePage:
             pady=15
         )
 
-        # Weather
+        # Quick Actions
 
-        weather_frame = ctk.CTkFrame(
+        quick_frame = ctk.CTkFrame(
             bottom_row,
             corner_radius=20,
             border_width=1,
             border_color="#252d2d"
         )
 
-        weather_frame.pack(
+        quick_frame.pack(
             side="left",
             fill="both",
             expand=True,
@@ -453,18 +453,56 @@ class HomePage:
         )
 
         ctk.CTkLabel(
-            weather_frame,
-            text="🕒 Recently Played",
+            quick_frame,
+            text="⚡ Quick Actions",
             font=("Arial", 22, "bold")
-        ).pack(pady=(10, 6))
+        ).pack(pady=(10, 8))
 
-        self.recent_games_frame = ctk.CTkFrame(
-            weather_frame,
+        ctk.CTkLabel(
+            quick_frame,
+            text="Jump directly to the tools you use most.",
+            font=("Arial", 12),
+            text_color="gray"
+        ).pack(pady=(0, 10))
+
+        quick_buttons = ctk.CTkFrame(
+            quick_frame,
             fg_color="transparent"
         )
-        self.recent_games_frame.pack(fill="both", expand=True, padx=18, pady=(0, 12))
+        quick_buttons.pack(fill="both", expand=True, padx=18, pady=(0, 14))
 
-        self.render_recent_games()
+        ctk.CTkButton(
+            quick_buttons,
+            text="🎮  Start Gaming Session",
+            height=40,
+            corner_radius=11,
+            fg_color="#202727",
+            hover_color="#00aa88",
+            font=("Arial", 12, "bold"),
+            command=lambda: GamingSessionWindow(self.app)
+        ).pack(fill="x", pady=4)
+
+        ctk.CTkButton(
+            quick_buttons,
+            text="📊  Open Statistics",
+            height=40,
+            corner_radius=11,
+            fg_color="#202727",
+            hover_color="#00aa88",
+            font=("Arial", 12, "bold"),
+            command=lambda: self.app.show_page("stats")
+        ).pack(fill="x", pady=4)
+
+        ctk.CTkButton(
+            quick_buttons,
+            text="🎵  Open Music",
+            height=40,
+            corner_radius=11,
+            fg_color="#202727",
+            hover_color="#00aa88",
+            font=("Arial", 12, "bold"),
+            command=lambda: self.app.show_page("music")
+        ).pack(fill="x", pady=4)
 
     # ==================================================
     # CLOCK
@@ -488,55 +526,6 @@ class HomePage:
     # ==================================================
     # PERFORMANCE
     # ==================================================
-
-    def render_recent_games(self):
-
-        if not hasattr(self, "recent_games_frame"):
-            return
-
-        for widget in self.recent_games_frame.winfo_children():
-            widget.destroy()
-
-        games = load_json("data/games.json") or []
-        recent = [
-            game for game in games
-            if game.get("last_played")
-        ]
-        recent.sort(
-            key=lambda game: game.get("last_played", ""),
-            reverse=True
-        )
-
-        if not recent:
-            ctk.CTkLabel(
-                self.recent_games_frame,
-                text="No games played yet.",
-                font=("Arial", 13),
-                text_color="gray"
-            ).pack(pady=18)
-            return
-
-        for game in recent[:4]:
-            row = ctk.CTkFrame(
-                self.recent_games_frame,
-                corner_radius=10,
-                fg_color="#181b1b"
-            )
-            row.pack(fill="x", pady=3)
-
-            ctk.CTkLabel(
-                row,
-                text=game.get("name", "Unknown"),
-                font=("Arial", 12, "bold"),
-                anchor="w"
-            ).pack(side="left", padx=12, pady=7)
-
-            ctk.CTkLabel(
-                row,
-                text=game.get("last_played", "")[-8:],
-                font=("Arial", 10),
-                text_color="gray"
-            ).pack(side="right", padx=12)
 
     def update_performance(self):
 
@@ -575,8 +564,6 @@ class HomePage:
             self.tasks_count.configure(text=str(len(tasks)))
         except Exception:
             pass
-
-        self.render_recent_games()
 
         self.parent.after(1200, self.update_performance)
 
