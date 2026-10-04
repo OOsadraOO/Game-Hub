@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from icons import get_icon
 from utils import load_json
 
 
