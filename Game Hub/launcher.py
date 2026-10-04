@@ -111,7 +111,7 @@ class GameLauncher:
         ctk.CTkLabel(
             title_bar,
             text="Game Launcher",
-            image=get_icon("launcher", 28),
+            image=get_icon("launcher", 26),
             compound="left",
             font=("Arial", 26, "bold"),
             text_color="#00ffee"
@@ -329,7 +329,7 @@ class GameLauncher:
             header,
 
             text="Add Game",
-            image=get_icon("add", 18),
+            image=get_icon("add", 17),
             compound="left",
 
             width=145,
@@ -353,7 +353,7 @@ class GameLauncher:
             header,
 
             text="",
-            image=get_icon("refresh", 20),
+            image=get_icon("refresh", 18),
 
             width=46,
 
