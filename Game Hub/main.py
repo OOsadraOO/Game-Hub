@@ -213,7 +213,7 @@ class App(ctk.CTk):
 
         ctk.CTkLabel(
             version_frame,
-            text="GAMEHUB  •  v1.0",
+            text="GAMEHUB  •  v2.0",
             text_color="#667070"
         ).pack()
 
