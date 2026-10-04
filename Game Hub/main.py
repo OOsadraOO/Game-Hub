@@ -105,9 +105,10 @@ class App(ctk.CTk):
 
         self.sidebar = ctk.CTkFrame(
             self,
-            width=220,
+            width=225,
             corner_radius=0,
-            border_width=2
+            border_width=1,
+            border_color="#222828"
         )
 
         self.sidebar.grid(
@@ -129,7 +130,7 @@ class App(ctk.CTk):
         )
 
         logo_frame.pack(
-            pady=(25, 20)
+            pady=(28, 22)
         )
 
         ctk.CTkLabel(
@@ -156,7 +157,7 @@ class App(ctk.CTk):
 
         nav_frame.pack(
             fill="x",
-            padx=20,
+            padx=18,
             pady=10
         )
 
@@ -171,6 +172,7 @@ class App(ctk.CTk):
         ]
 
         self.nav_buttons = []
+        self.nav_pages = []
 
         for text, page in buttons:
 
@@ -178,10 +180,11 @@ class App(ctk.CTk):
                 nav_frame,
                 text=text,
                 height=50,
-                corner_radius=15,
-                font=("Arial", 16, "bold"),
-                command=lambda p=page:
-                self.show_page(p)
+                corner_radius=14,
+                font=("Arial", 15, "bold"),
+                fg_color="#181b1b",
+                hover_color="#243030",
+                command=lambda p=page: self.show_page(p)
             )
 
             btn.pack(
@@ -190,6 +193,7 @@ class App(ctk.CTk):
             )
 
             self.nav_buttons.append(btn)
+            self.nav_pages.append(page)
 
         # ==================================================
         # VERSION
@@ -207,8 +211,8 @@ class App(ctk.CTk):
 
         ctk.CTkLabel(
             version_frame,
-            text="GameHub v1.0",
-            text_color="gray"
+            text="GAMEHUB  •  v1.0",
+            text_color="#667070"
         ).pack()
 
         # ==================================================
@@ -217,7 +221,7 @@ class App(ctk.CTk):
 
         self.container = ctk.CTkFrame(
             self,
-            fg_color="#111111",
+            fg_color="#0f1212",
             corner_radius=0
         )
 
@@ -322,7 +326,6 @@ class App(ctk.CTk):
     def show_page(self, page_name):
 
         for page in self.pages.values():
-
             page.grid_forget()
 
         self.pages[page_name].grid(
@@ -330,6 +333,18 @@ class App(ctk.CTk):
             column=0,
             sticky="nsew"
         )
+
+        for button, page in zip(self.nav_buttons, self.nav_pages):
+            if page == page_name:
+                button.configure(
+                    fg_color="#00aa88",
+                    hover_color="#00ccaa"
+                )
+            else:
+                button.configure(
+                    fg_color="#181b1b",
+                    hover_color="#243030"
+                )
 
 
 # ==================================================
