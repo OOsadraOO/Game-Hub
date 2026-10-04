@@ -15,6 +15,8 @@ from win32api import GetSystemMetrics
 from tkinter import filedialog
 from tkinter import messagebox
 from utils import load_json, save_json
+from profiles import GameProfileWindow
+import time
 
 
 class GameLauncher:
@@ -34,6 +36,9 @@ class GameLauncher:
         self.stats = load_json(
             "data/game_stats.json"
         )
+
+        self.playtime = load_json("data/playtime.json") or {}
+        self.active_sessions = {}
 
         self.build_ui()
         self.render_games()
@@ -656,6 +661,18 @@ class GameLauncher:
 
         ctk.CTkButton(
             buttons,
+            text="👤 Profile",
+            width=105,
+            height=38,
+            corner_radius=11,
+            font=("Arial", 13, "bold"),
+            fg_color="#30383a",
+            hover_color="#00aa88",
+            command=lambda g=game: GameProfileWindow(self.app, g)
+        ).pack(side="left", padx=5)
+
+        ctk.CTkButton(
+            buttons,
             text="✏ Edit",
             width=100,
             height=38,
@@ -905,52 +922,56 @@ class GameLauncher:
     def launch_game(self, game):
 
         try:
-
             path = game["path"]
 
-            if "VALORANT" in path.upper():
-
-                riot_path = (
-                    r"C:Riot GamesRiot ClientRiotClientServices.exe"
-                )
-
-                subprocess.Popen([
-                    riot_path,
-                    "--launch-product=valorant",
-                    "--launch-patchline=live"
-                ])
-
-            else:
-
-                subprocess.Popen(
-                    path,
-                    shell=True
-                )
+            process = subprocess.Popen(
+                path,
+                shell=True
+            )
 
             game_name = game["name"]
 
-            if game_name not in self.stats:
-                self.stats[game_name] = 0
+            self.stats[game_name] = self.stats.get(game_name, 0) + 1
+            self.playtime.setdefault(game_name, 0)
 
-            self.stats[game_name] += 1
+            save_json("data/game_stats.json", self.stats)
 
-            save_json(
-                "data/game_stats.json",
-                self.stats
-            )
             game["last_played"] = datetime.now().strftime(
                 "%Y-%m-%d %H:%M:%S"
             )
+            save_json("data/games.json", self.games)
 
-            save_json(
-                "data/games.json",
-                self.games
-            )
+            self.active_sessions[game_name] = {
+                "process": process,
+                "started": time.time()
+            }
+
+            self.track_playtime(game_name)
             self.render_games()
 
         except Exception as e:
+            print("Launch Error:", e)
 
-            print(
-                "Launch Error:",
-                e
-            )
+    def track_playtime(self, game_name):
+
+        session = self.active_sessions.get(game_name)
+
+        if not session:
+            return
+
+        process = session["process"]
+
+        if process.poll() is not None:
+            elapsed = max(0, int(time.time() - session["started"]))
+            self.playtime[game_name] = self.playtime.get(game_name, 0) + elapsed
+            save_json("data/playtime.json", self.playtime)
+            del self.active_sessions[game_name]
+            return
+
+        elapsed = max(0, int(time.time() - session["started"]))
+        self.playtime[game_name] = self.playtime.get(game_name, 0) + elapsed
+        session["started"] = time.time()
+        save_json("data/playtime.json", self.playtime)
+
+        self.parent.after(5000, lambda: self.track_playtime(game_name))
+
