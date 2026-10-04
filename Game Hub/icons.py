@@ -88,6 +88,10 @@ def _draw(draw, kind, s, color):
         draw.ellipse((s*.60, s*.60, s*.86, s*.86), outline=color, width=w)
         _line(draw, [(s*.73, s*.67), (s*.73, s*.74), (s*.78, s*.77)], color, w)
 
+    elif kind == "profile":
+        draw.ellipse((s*.35, s*.18, s*.65, s*.48), outline=color, width=w)
+        draw.arc((s*.22, s*.43, s*.78, s*.88), 200, 340, fill=color, width=w)
+
     elif kind == "settings":
         # Eight short teeth + clear center hole.
         draw.ellipse((s*.27, s*.27, s*.73, s*.73), outline=color, width=w)
