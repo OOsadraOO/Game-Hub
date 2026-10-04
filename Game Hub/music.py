@@ -32,6 +32,7 @@ class MusicPlayer:
         self.track_length = 0.0
         self.user_seeking = False
         self.has_started_playback = False
+        self.playlist_search = ctk.StringVar()
 
         self.build_ui()
         self.render_playlist()
@@ -207,6 +208,33 @@ class MusicPlayer:
             font=("Arial", 20, "bold")
         ).pack(side="left")
 
+        self.playlist_search_entry = ctk.CTkEntry(
+            playlist_card,
+            textvariable=self.playlist_search,
+            placeholder_text="🔍 Search playlist...",
+            height=36,
+            corner_radius=10
+        )
+        self.playlist_search_entry.pack(fill="x", padx=20, pady=(0, 8))
+        self.playlist_search_entry.bind("<KeyRelease>", lambda _e: self.render_playlist())
+
+        actions = ctk.CTkFrame(
+            playlist_card,
+            fg_color="transparent"
+        )
+        actions.pack(fill="x", padx=20, pady=(0, 8))
+
+        ctk.CTkButton(
+            actions,
+            text="🧹 Clean",
+            width=90,
+            height=32,
+            corner_radius=9,
+            fg_color="#30383a",
+            hover_color="#00aa88",
+            command=self.clean_playlist
+        ).pack(side="right")
+
         ctk.CTkButton(
             playlist_header,
             text="+ Add",
@@ -268,8 +296,14 @@ class MusicPlayer:
             ).pack(expand=True, pady=70)
             return
 
+        playlist_query = self.playlist_search.get().lower().strip()
+
         for index, path in enumerate(self.music_list):
             name = os.path.basename(path)
+
+            if playlist_query and playlist_query not in name.lower():
+                continue
+
             selected = index == self.current_index
 
             row = ctk.CTkFrame(
@@ -310,6 +344,36 @@ class MusicPlayer:
                 hover_color="#7a2020",
                 command=lambda p=path: self.delete_music(p)
             ).pack(side="right", padx=7)
+
+    def clean_playlist(self):
+
+        missing = [
+            path for path in self.music_list
+            if not os.path.exists(path)
+        ]
+
+        if not missing:
+            self.status_label.configure(
+                text="Playlist is already clean.",
+                text_color="gray"
+            )
+            return
+
+        self.music_list = [
+            path for path in self.music_list
+            if os.path.exists(path)
+        ]
+
+        if self.current_music in missing:
+            pygame.mixer.music.stop()
+            self.current_music = ""
+            self.current_index = -1
+            self.has_started_playback = False
+            self.music_name_label.configure(text="No music selected")
+            self.status_label.configure(text="Removed missing files.", text_color="#ffaa00")
+
+        save_json("data/music_playlist.json", self.music_list)
+        self.render_playlist()
 
     def select_music(self, path, index, autoplay=True):
         if not os.path.exists(path):
