@@ -53,13 +53,13 @@ class HomePage:
         top_frame.pack(
             fill="x",
             padx=25,
-            pady=15
+            pady=(22, 12)
         )
 
         ctk.CTkLabel(
             top_frame,
-            text="🎮 GameHub Dashboard",
-            font=("Arial", 34, "bold"),
+            text="🎮  GameHub Dashboard",
+            font=("Arial", 32, "bold"),
             text_color="#00ffee"
         ).pack(
             side="left"
@@ -83,12 +83,12 @@ class HomePage:
         self.clock_label = ctk.CTkLabel(
             self.parent,
             text="00:00:00",
-            font=("Arial", 55, "bold"),
+            font=("Arial", 48, "bold"),
             text_color="#00ff88"
         )
 
         self.clock_label.pack(
-            pady=(5, 20)
+            pady=(2, 14)
         )
 
         # ==============================================
@@ -128,7 +128,7 @@ class HomePage:
           width=220,
           height=130,
             corner_radius=20,
-            border_width=2,
+            border_width=1,
             border_color="#00ffee"
         )
 
@@ -142,15 +142,15 @@ class HomePage:
         ctk.CTkLabel(
             self.games_card,
             text="🎮 Games",
-            font=("Arial", 24)
+            font=("Arial", 20, "bold")
         ).pack(
-            pady=15
+            pady=(16, 10)
         )
 
         self.games_count = ctk.CTkLabel(
             self.games_card,
             text="0",
-            font=("Arial", 40, "bold"),
+            font=("Arial", 36, "bold"),
             text_color="#00ffee"
         )
 
@@ -163,7 +163,7 @@ class HomePage:
             width=220,
             height=130,
             corner_radius=20,
-            border_width=2,
+            border_width=1,
             border_color="#ff00ff"
         )
 
@@ -198,7 +198,7 @@ class HomePage:
            width=220,
            height=130,
             corner_radius=20,
-            border_width=2,
+            border_width=1,
             border_color="#00ff88"
         )
 
@@ -233,7 +233,7 @@ class HomePage:
             width=220,
             height=130,
             corner_radius=20,
-            border_width=2,
+            border_width=1,
             border_color="#ffaa00"
         )
 
@@ -260,6 +260,38 @@ class HomePage:
         )
 
         self.ram_card_label.pack()
+
+        # ==============================================
+        # ✨ CARD HOVER
+        # ==============================================
+
+        dashboard_cards = [
+            self.games_card,
+            self.tasks_card,
+            self.cpu_card,
+            self.ram_card
+        ]
+
+        for card in dashboard_cards:
+            normal_border = card.cget("border_color")
+            normal_fg = card.cget("fg_color")
+            card.bind(
+                "<Enter>",
+                lambda _e, c=card: c.configure(
+                    fg_color="#171d1d",
+                    border_width=2
+                ),
+                add="+"
+            )
+            card.bind(
+                "<Leave>",
+                lambda _e, c=card, fg=normal_fg, bc=normal_border: c.configure(
+                    fg_color=fg,
+                    border_width=1,
+                    border_color=bc
+                ),
+                add="+"
+            )
 
         # ==============================================
         # PERFORMANCE PANEL
@@ -333,7 +365,9 @@ class HomePage:
 
         quote_frame = ctk.CTkFrame(
             bottom_row,
-            corner_radius=20
+            corner_radius=20,
+            border_width=1,
+            border_color="#252d2d"
         )
 
         quote_frame.pack(
@@ -368,7 +402,9 @@ class HomePage:
 
         weather_frame = ctk.CTkFrame(
             bottom_row,
-            corner_radius=20
+            corner_radius=20,
+            border_width=1,
+            border_color="#252d2d"
         )
 
         weather_frame.pack(
