@@ -183,7 +183,7 @@ class App(ctk.CTk):
             btn = ctk.CTkButton(
                 nav_frame,
                 text=text,
-                image=get_icon(icon_name, 22),
+                image=get_icon(icon_name, 18),
                 compound="left",
                 anchor="w",
                 height=50,
@@ -395,7 +395,7 @@ class App(ctk.CTk):
                 ctk.CTkButton(
                     rows,
                     text=label,
-                    image=get_icon(icon_name, 20),
+                    image=get_icon(icon_name, 18),
                     compound="left",
                     height=42,
                     corner_radius=10,
