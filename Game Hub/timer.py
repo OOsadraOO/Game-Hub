@@ -18,6 +18,8 @@ class TimerSystem:
         self.total_seconds = self.time_left
         self.timer_running = False
         self.timer_job = None
+        self.pulse_state = False
+        self.pulse_job = None
 
         self.build_ui()
         self.update_display()
@@ -286,6 +288,7 @@ class TimerSystem:
             text="● RUNNING",
             text_color="#00ff88"
         )
+        self.start_pulse()
         self.start_button.configure(state="disabled")
         self.message_label.configure(text="Focus mode is active.")
         self.schedule_tick()
@@ -308,6 +311,7 @@ class TimerSystem:
             return
 
         self.timer_running = False
+        self.stop_pulse()
 
         if self.timer_job is not None:
             self.parent.after_cancel(self.timer_job)
@@ -323,6 +327,7 @@ class TimerSystem:
 
     def reset_timer(self):
         self.timer_running = False
+        self.stop_pulse()
 
         if self.timer_job is not None:
             try:
@@ -347,6 +352,7 @@ class TimerSystem:
     def finish_timer(self):
         self.timer_running = False
         self.timer_job = None
+        self.stop_pulse()
         self.time_left = 0
 
         self.status_label.configure(
@@ -363,6 +369,31 @@ class TimerSystem:
             "GameHub Timer",
             "Focus session finished!"
         )
+
+    def start_pulse(self):
+        if self.pulse_job is not None:
+            return
+        self.pulse_tick()
+
+    def pulse_tick(self):
+        if not self.timer_running:
+            self.pulse_job = None
+            return
+
+        self.pulse_state = not self.pulse_state
+        self.status_label.configure(
+            text_color="#00ffee" if self.pulse_state else "#00ff88"
+        )
+        self.pulse_job = self.parent.after(650, self.pulse_tick)
+
+    def stop_pulse(self):
+        if self.pulse_job is not None:
+            try:
+                self.parent.after_cancel(self.pulse_job)
+            except Exception:
+                pass
+            self.pulse_job = None
+        self.pulse_state = False
 
     def update_display(self):
         self.timer_label.configure(
