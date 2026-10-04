@@ -32,18 +32,35 @@ def _draw(draw, kind, s, color):
         )
         draw.rectangle((s*.45, s*.61, s*.55, s*.82), fill=color)
 
-    elif kind in ("launcher", "logo"):
-        # Simple, unmistakable gamepad. No decorative intersections.
+    elif kind == "logo":
+        # Dedicated GameHub mark: a clear gamepad inside a simple badge.
+        draw.rounded_rectangle(
+            (s*.10, s*.10, s*.90, s*.90),
+            radius=int(s*.18),
+            outline=color,
+            width=w
+        )
+        draw.rounded_rectangle(
+            (s*.22, s*.32, s*.78, s*.68),
+            radius=int(s*.14),
+            outline=color,
+            width=w
+        )
+        _line(draw, [(s*.33, s*.42), (s*.33, s*.58)], color, w)
+        _line(draw, [(s*.25, s*.50), (s*.41, s*.50)], color, w)
+        draw.ellipse((s*.59, s*.41, s*.67, s*.49), fill=GREEN)
+        draw.ellipse((s*.70, s*.52, s*.78, s*.60), fill=GREEN)
+
+    elif kind == "launcher":
+        # Clean gamepad icon for Launcher navigation and page title.
         draw.rounded_rectangle(
             (s*.16, s*.34, s*.84, s*.70),
             radius=int(s*.15),
             outline=color,
             width=w
         )
-        # D-pad
         _line(draw, [(s*.31, s*.43), (s*.31, s*.61)], color, w)
         _line(draw, [(s*.22, s*.52), (s*.40, s*.52)], color, w)
-        # Buttons
         draw.ellipse((s*.61, s*.43, s*.68, s*.50), fill=GREEN)
         draw.ellipse((s*.71, s*.53, s*.78, s*.60), fill=GREEN)
 
