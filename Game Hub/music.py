@@ -5,6 +5,7 @@
 import os
 import random
 import customtkinter as ctk
+from icons import get_icon
 import pygame
 
 from tkinter import filedialog
@@ -45,7 +46,9 @@ class MusicPlayer:
 
         ctk.CTkLabel(
             header,
-            text="🎵  Music Player",
+            text="Music Player",
+            image=get_icon("music", 34),
+            compound="left",
             font=("Arial", 32, "bold"),
             text_color="#00ffee"
         ).pack(side="left")
