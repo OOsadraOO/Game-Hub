@@ -336,6 +336,69 @@ class App(ctk.CTk):
 
         animate_rgb(self)
 
+    def open_command_palette(self, _event=None):
+
+        window = ctk.CTkToplevel(self)
+        window.title("Command Palette")
+        window.geometry("520x430")
+        window.grab_set()
+
+        ctk.CTkLabel(
+            window,
+            text="⌘  Command Palette",
+            font=("Arial", 24, "bold"),
+            text_color="#00ffee"
+        ).pack(pady=(22, 12))
+
+        search = ctk.CTkEntry(
+            window,
+            placeholder_text="Search commands...",
+            height=42,
+            corner_radius=12
+        )
+        search.pack(fill="x", padx=25, pady=(0, 12))
+        search.focus_set()
+
+        commands = [
+            ("🏠  Go Home", lambda: self.show_page("home")),
+            ("🎮  Open Launcher", lambda: self.show_page("launcher")),
+            ("🎵  Open Music", lambda: self.show_page("music")),
+            ("⏱  Open Timer", lambda: self.show_page("timer")),
+            ("📝  Open To-Do", lambda: self.show_page("todo")),
+            ("📊  Open Statistics", lambda: self.show_page("stats")),
+        ]
+
+        rows = ctk.CTkScrollableFrame(window, corner_radius=15)
+        rows.pack(fill="both", expand=True, padx=25, pady=(0, 20))
+
+        def render():
+            for widget in rows.winfo_children():
+                widget.destroy()
+
+            query = search.get().lower().strip()
+
+            for label, command in commands:
+                if query and query not in label.lower():
+                    continue
+
+                def run(cmd=command):
+                    window.destroy()
+                    cmd()
+
+                ctk.CTkButton(
+                    rows,
+                    text=label,
+                    height=42,
+                    corner_radius=10,
+                    fg_color="#202727",
+                    hover_color="#00aa88",
+                    anchor="w",
+                    command=run
+                ).pack(fill="x", pady=4)
+
+        search.bind("<KeyRelease>", lambda _e: render())
+        render()
+
     # ==================================================
     # PAGE SWITCH
     # ==================================================
