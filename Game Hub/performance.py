@@ -1,4 +1,6 @@
 import psutil
+import subprocess
+import time
 
 try:
     import win32pdh
@@ -6,7 +8,11 @@ except ImportError:
     win32pdh = None
 
 
-def get_gpu_usage():
+def _clamp(value):
+    return max(0.0, min(100.0, float(value)))
+
+
+def _get_gpu_usage_pdh():
     if win32pdh is None:
         return None
 
@@ -23,12 +29,13 @@ def get_gpu_usage():
 
         try:
             for index, instance in enumerate(instances):
-                if "engtype_3D" not in instance.lower():
+                if "engtype_3d" not in instance.lower():
                     continue
 
                 path = win32pdh.MakeCounterPath(
                     (None, "GPU Engine", instance, None, index, "Utilization Percentage")
                 )
+
                 try:
                     counters.append(win32pdh.AddCounter(query, path))
                 except Exception:
@@ -38,28 +45,100 @@ def get_gpu_usage():
                 return None
 
             win32pdh.CollectQueryData(query)
-
-            import time
             time.sleep(0.05)
-
             win32pdh.CollectQueryData(query)
 
-            total = 0.0
+            values = []
+
             for counter in counters:
                 try:
                     _, value = win32pdh.GetFormattedCounterValue(
                         counter, win32pdh.PDH_FMT_DOUBLE
                     )
-                    total += float(value)
+                    values.append(float(value))
                 except Exception:
                     pass
 
-            return max(0.0, min(100.0, total))
+            if not values:
+                return None
+
+            return _clamp(sum(values))
         finally:
             win32pdh.CloseQuery(query)
 
     except Exception:
         return None
+
+
+def _get_gpu_usage_powershell():
+    """Fallback for systems where the pywin32 PDH query is unavailable."""
+    command = (
+        "$samples = (Get-Counter "
+        "'\\GPU Engine(*)\\Utilization Percentage' "
+        "-ErrorAction Stop).CounterSamples | "
+        "Where-Object { $_.InstanceName -like '*engtype_3D*' }; "
+        "($samples | Measure-Object -Property CookedValue -Sum).Sum"
+    )
+
+    try:
+        result = subprocess.run(
+            [
+                "powershell",
+                "-NoProfile",
+                "-ExecutionPolicy", "Bypass",
+                "-Command", command
+            ],
+            capture_output=True,
+            text=True,
+            timeout=2.0
+        )
+
+        if result.returncode != 0:
+            return None
+
+        raw = result.stdout.strip().replace(",", ".")
+        if not raw or raw.lower() == "nan":
+            return None
+
+        return _clamp(float(raw))
+    except Exception:
+        return None
+
+
+def get_gpu_usage():
+    value = _get_gpu_usage_pdh()
+
+    if value is not None:
+        return value
+
+    return _get_gpu_usage_powershell()
+
+
+def get_gpu_name():
+    """Return the primary Windows display adapter name when available."""
+    try:
+        result = subprocess.run(
+            [
+                "powershell",
+                "-NoProfile",
+                "-Command",
+                "(Get-CimInstance Win32_VideoController | "
+                "Where-Object { $_.Name } | "
+                "Select-Object -ExpandProperty Name) -join ' | '"
+            ],
+            capture_output=True,
+            text=True,
+            timeout=2.0
+        )
+
+        if result.returncode == 0:
+            name = result.stdout.strip()
+            if name:
+                return name
+    except Exception:
+        pass
+
+    return None
 
 
 def get_system_snapshot():
@@ -68,5 +147,6 @@ def get_system_snapshot():
         "ram": psutil.virtual_memory().percent,
         "ram_used": psutil.virtual_memory().used,
         "ram_total": psutil.virtual_memory().total,
-        "gpu": get_gpu_usage()
+        "gpu": get_gpu_usage(),
+        "gpu_name": get_gpu_name()
     }
