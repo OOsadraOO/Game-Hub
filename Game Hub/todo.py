@@ -3,6 +3,7 @@
 # ==================================================
 
 import customtkinter as ctk
+from icons import get_icon
 
 from utils import load_json, save_json
 
@@ -33,7 +34,9 @@ class TodoSystem:
 
         ctk.CTkLabel(
             header,
-            text="📝  To-Do",
+            text="To-Do",
+            image=get_icon("todo", 34),
+            compound="left",
             font=("Arial", 32, "bold"),
             text_color="#00ffee"
         ).pack(side="left")
