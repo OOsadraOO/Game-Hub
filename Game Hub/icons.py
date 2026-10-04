@@ -16,7 +16,7 @@ def _line(draw, pts, fill, width):
 
 def _draw(draw, kind, s, color):
     import math
-    w = max(2, s // 12)
+    w = max(2, round(s / 9))
     m = s * 0.18
     cx = s / 2
     cy = s / 2
@@ -32,8 +32,8 @@ def _draw(draw, kind, s, color):
         draw.ellipse((s*.66, s*.30, s*.90, s*.70), outline=color, width=w)
         _line(draw, [(s*.25, cy), (s*.43, cy)], color, w)
         _line(draw, [(s*.34, s*.41), (s*.34, s*.59)], color, w)
-        draw.ellipse((s*.62, s*.42, s*.69, s*.49), fill=GREEN)
-        draw.ellipse((s*.73, s*.53, s*.80, s*.60), fill=GREEN)
+        draw.ellipse((s*.62, s*.47, s*.68, s*.53), fill=GREEN)
+        draw.ellipse((s*.72, s*.57, s*.78, s*.63), fill=GREEN)
 
     elif kind == "music":
         _line(draw, [(s*.60, s*.20), (s*.60, s*.67)], color, w)
@@ -63,7 +63,7 @@ def _draw(draw, kind, s, color):
     elif kind == "settings":
         draw.ellipse((s*.28,s*.28,s*.72,s*.72), outline=color, width=w)
         draw.ellipse((s*.43,s*.43,s*.57,s*.57), outline=color, width=w)
-        for a in range(0,360,45):
+        for a in range(0,360,60):
             x1=cx+math.cos(math.radians(a))*s*.30
             y1=cy+math.sin(math.radians(a))*s*.30
             x2=cx+math.cos(math.radians(a))*s*.44
