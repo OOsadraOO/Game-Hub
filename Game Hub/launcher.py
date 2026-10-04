@@ -185,7 +185,7 @@ class GameLauncher:
         games_card = ctk.CTkFrame(
             stats_frame,
             width=155,
-            height=72,
+            height=76,
             corner_radius=16,
             border_width=1,
             border_color="#2c2c2c",
@@ -204,13 +204,14 @@ class GameLauncher:
             text="Games",
             image=get_icon("launcher", 16),
             compound="left",
-            font=("Arial",12)
+            font=("Arial",11, "bold"),
+            text_color="#d7dddd"
         ).pack(pady=(8,0))
 
         self.total_games_label = ctk.CTkLabel(
             games_card,
             text="0",
-            font=("Arial",24,"bold"),
+            font=("Arial",22,"bold"),
             text_color="#00ffee"
         )
 
@@ -221,8 +222,8 @@ class GameLauncher:
 
         launch_card = ctk.CTkFrame(
             stats_frame,
-            width=125,
-            height=72,
+            width=155,
+            height=76,
             corner_radius=16,
             border_width=1,
             border_color="#2c2c2c",
@@ -241,13 +242,14 @@ class GameLauncher:
             text="Launches",
             image=get_icon("play", 16),
             compound="left",
-            font=("Arial",12)
+            font=("Arial",11, "bold"),
+            text_color="#d7dddd"
         ).pack(pady=(8,0))
 
         self.total_launches_label = ctk.CTkLabel(
             launch_card,
             text="0",
-            font=("Arial",24,"bold"),
+            font=("Arial",22,"bold"),
             text_color="#ffb000"
         )
 
@@ -259,9 +261,11 @@ class GameLauncher:
         favorite_card = ctk.CTkFrame(
             stats_frame,
             width=155,
-            height=72,
-            corner_radius=15,
-            fg_color="#1b1b1b"
+            height=76,
+            corner_radius=16,
+            border_width=1,
+            border_color="#2c2c2c",
+            fg_color="#181b1b"
         )
 
         favorite_card.pack(
@@ -276,13 +280,14 @@ class GameLauncher:
             text="Favorites",
             image=get_icon("star", 16),
             compound="left",
-            font=("Arial",12)
+            font=("Arial",11, "bold"),
+            text_color="#d7dddd"
         ).pack(pady=(8,0))
 
         self.favorite_label = ctk.CTkLabel(
             favorite_card,
             text="0",
-            font=("Arial",24,"bold"),
+            font=("Arial",22,"bold"),
             text_color="#ff44ff"
         )
 
@@ -293,8 +298,8 @@ class GameLauncher:
 
         last_card = ctk.CTkFrame(
             stats_frame,
-            width=195,
-            height=72,
+            width=220,
+            height=76,
             corner_radius=16,
             border_width=1,
             border_color="#2c2c2c",
@@ -313,14 +318,17 @@ class GameLauncher:
             text="Last Played",
             image=get_icon("timer", 16),
             compound="left",
-            font=("Arial",12)
+            font=("Arial",11, "bold"),
+            text_color="#d7dddd"
         ).pack(pady=(8,0))
 
         self.last_game_label = ctk.CTkLabel(
             last_card,
             text="None",
-            font=("Arial",18,"bold"),
-            text_color="#55ff88"
+            font=("Arial",16,"bold"),
+            text_color="#55ff88",
+            width=190,
+            anchor="center"
         )
 
         self.last_game_label.pack()
@@ -605,12 +613,14 @@ class GameLauncher:
         if "favorite" not in game:
             game["favorite"] = False
 
-        fav_text = "⭐" if game["favorite"] else "☆"
+        fav_color = "#ff44ff" if game["favorite"] else "#8a9494"
 
         fav_btn = ctk.CTkButton(
             top,
-            text=fav_text,
+            text="",
+            image=get_icon("star", 19, fav_color),
             width=40,
+            height=36,
             fg_color="transparent",
             hover_color=("#333333", "#333333"),
             command=lambda g=game: self.toggle_favorite(g)
@@ -645,15 +655,19 @@ class GameLauncher:
 
         ctk.CTkLabel(
             stats,
-            text=f"🚀  {launches}",
-            font=("Arial", 16, "bold"),
+            text=f"  {launches}",
+            image=get_icon("play", 16, "#ffb000"),
+            compound="left",
+            font=("Arial", 15, "bold"),
             text_color="#ffb000"
         ).pack(side="left", padx=5)
 
         ctk.CTkLabel(
             stats,
-            text=f"🕒 Last Played: {last_played}",
-            font=("Arial", 14)
+            text=f" Last Played: {last_played}",
+            image=get_icon("timer", 16),
+            compound="left",
+            font=("Arial", 13)
         ).pack(side="left", padx=25)
 
         # =========================
@@ -673,7 +687,9 @@ class GameLauncher:
 
         ctk.CTkButton(
             buttons,
-            text="▶ Play",
+            text="Play",
+            image=get_icon("play", 16),
+            compound="left",
             width=120,
             height=38,
             corner_radius=11,
@@ -685,7 +701,9 @@ class GameLauncher:
 
         ctk.CTkButton(
             buttons,
-            text="👤 Profile",
+            text="Profile",
+            image=get_icon("profile", 16),
+            compound="left",
             width=105,
             height=38,
             corner_radius=11,
@@ -697,7 +715,9 @@ class GameLauncher:
 
         ctk.CTkButton(
             buttons,
-            text="✏ Edit",
+            text="Edit",
+            image=get_icon("edit", 16),
+            compound="left",
             width=100,
             height=38,
             corner_radius=11,
@@ -709,7 +729,9 @@ class GameLauncher:
 
         delete_button = ctk.CTkButton(
             buttons,
-            text="🗑 Delete",
+            text="Delete",
+            image=get_icon("delete", 16),
+            compound="left",
             width=100,
             height=38,
             corner_radius=11,
