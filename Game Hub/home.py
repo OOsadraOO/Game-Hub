@@ -44,68 +44,70 @@ class HomePage:
     def build_ui(self):
 
         # ==============================================
-        # TOP BAR
-        # ==============================================
+        # TOP BAR + CLOCK
 
         top_frame = ctk.CTkFrame(
             self.parent,
-            fg_color="transparent"
+            height=78,
+            corner_radius=18,
+            border_width=1,
+            border_color="#252d2d"
         )
 
         top_frame.pack(
             fill="x",
-            padx=25,
-            pady=(10, 6)
+            padx=20,
+            pady=(4, 8)
         )
-
-        ctk.CTkLabel(
-            top_frame,
-            text="🎮  GameHub Dashboard",
-            font=("Arial", 32, "bold"),
-            text_color="#00ffee"
-        ).pack(
-            side="left"
-        )
+        top_frame.pack_propagate(False)
 
         ctk.CTkButton(
             top_frame,
             text="🎮 Session",
             width=115,
-            height=44,
-            corner_radius=13,
+            height=42,
+            corner_radius=12,
             fg_color="#202727",
             hover_color="#00aa88",
             font=("Arial", 12, "bold"),
             command=lambda: GamingSessionWindow(self.app)
-        ).pack(side="right", padx=(0, 8))
+        ).pack(side="left", padx=10)
 
         ctk.CTkButton(
-        top_frame,
-        text="⚙",
-        width=50,
-        height=50,
-        corner_radius=15,
-        command=lambda: SettingsWindow(self.app)
-        ).pack(
-        side="right"
-        )
-
-        # ==============================================
-        # CLOCK
-        # ==============================================
+            top_frame,
+            text="⚙",
+            width=48,
+            height=42,
+            corner_radius=12,
+            fg_color="#202727",
+            hover_color="#00aa88",
+            font=("Arial", 18, "bold"),
+            command=lambda: SettingsWindow(self.app)
+        ).pack(side="right", padx=10)
 
         self.clock_label = ctk.CTkLabel(
-            self.parent,
+            top_frame,
             text="00:00:00",
-            font=("Arial", 48, "bold"),
+            font=("Arial", 34, "bold"),
             text_color="#00ff88"
         )
-
-        self.clock_label.pack(
-            pady=(0, 2)
+        self.clock_label.place(
+            relx=0.5,
+            rely=0.5,
+            anchor="center"
         )
 
-        # ==============================================
+        ctk.CTkLabel(
+            top_frame,
+            text="GameHub",
+            font=("Arial", 11, "bold"),
+            text_color="#00ffee"
+        ).place(
+            relx=0.5,
+            rely=0.83,
+            anchor="center"
+        )
+
         # DASHBOARD GRID
         # ==============================================
 
@@ -118,7 +120,7 @@ class HomePage:
             fill="both",
             expand=True,
             padx=20,
-            pady=4
+            pady=0
         )
 
         # ==============================================
@@ -132,7 +134,7 @@ class HomePage:
 
         row1.pack(
             fill="x",
-            pady=4
+            pady=(0, 4)
         )
 
         # Games
