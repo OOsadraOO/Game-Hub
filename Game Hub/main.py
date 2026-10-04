@@ -140,7 +140,7 @@ class App(ctk.CTk):
 
         ctk.CTkLabel(
             logo_frame,
-            image=get_icon("logo", 48),
+            image=get_icon("logo", 56),
             text=""
         ).pack(pady=(0, 4))
 
