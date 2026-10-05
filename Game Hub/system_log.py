@@ -37,6 +37,7 @@ class SystemLogService:
         self.gpu_high_since = None
         self.last_event = None
         self._ensure_db()
+        self._migrate_db()
 
     def _ensure_db(self):
         os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
@@ -56,7 +57,12 @@ class SystemLogService:
                     net_down REAL NOT NULL,
                     net_up REAL NOT NULL,
                     process_count INTEGER NOT NULL,
-                    severity TEXT NOT NULL
+                    severity TEXT NOT NULL,
+                    cpu_temp REAL,
+                    gpu_temp REAL,
+                    ping REAL,
+                    disk_free INTEGER,
+                    uptime REAL
                 )
             """)
             db.execute("""
@@ -76,6 +82,65 @@ class SystemLogService:
                 "CREATE INDEX IF NOT EXISTS idx_events_epoch ON events(epoch)"
             )
             db.commit()
+
+    def _migrate_db(self):
+        try:
+            with sqlite3.connect(DB_PATH) as db:
+                columns = {row[1] for row in db.execute("PRAGMA table_info(samples)")}
+                for name, kind in (
+                    ("cpu_temp", "REAL"), ("gpu_temp", "REAL"),
+                    ("ping", "REAL"), ("disk_free", "INTEGER"),
+                    ("uptime", "REAL")
+                ):
+                    if name not in columns:
+                        db.execute(f"ALTER TABLE samples ADD COLUMN {name} {kind}")
+                db.commit()
+        except Exception:
+            pass
+
+    @staticmethod
+    def _cpu_temperature():
+        try:
+            sensors = psutil.sensors_temperatures()
+            for entries in sensors.values():
+                values = [float(x.current) for x in entries if x.current is not None]
+                if values:
+                    return max(values)
+        except Exception:
+            pass
+        return None
+
+    @staticmethod
+    def _gpu_temperature():
+        try:
+            command = "(Get-Counter '\\GPU Engine(*)\\Temperature' -ErrorAction SilentlyContinue).CounterSamples | Select-Object -First 1 -ExpandProperty CookedValue"
+            result = subprocess.run(
+                ["powershell", "-NoProfile", "-Command", command],
+                capture_output=True, text=True, timeout=1.5
+            )
+            raw = result.stdout.strip().replace(",", ".")
+            if raw:
+                value = float(raw)
+                return value if 0 < value < 150 else None
+        except Exception:
+            pass
+        return None
+
+    @staticmethod
+    def _ping_value():
+        try:
+            result = subprocess.run(
+                ["ping", "-n", "1", "-w", "700", "1.1.1.1"],
+                capture_output=True, text=True, timeout=1.2
+            )
+            if result.returncode != 0:
+                return None
+            for token in result.stdout.replace("<", " ").split():
+                if token.lower().startswith("time="):
+                    return float(token.split("=", 1)[1].replace("ms", ""))
+        except Exception:
+            pass
+        return None
 
     def start(self):
         if self.running:
@@ -98,18 +163,18 @@ class SystemLogService:
         return max(0.0, (current - previous) / elapsed / (1024 * 1024))
 
     @staticmethod
-    def _severity(cpu, ram, gpu):
+    def _severity(cpu, ram, gpu, cpu_temp=None, gpu_temp=None, ping=None):
         values = [cpu, ram]
         if gpu is not None:
             values.append(gpu)
 
         peak = max(values)
 
-        if peak >= 95:
+        if peak >= 95 or (cpu_temp is not None and cpu_temp >= 90) or (gpu_temp is not None and gpu_temp >= 90):
             return "CRITICAL"
-        if peak >= 85:
+        if peak >= 85 or (cpu_temp is not None and cpu_temp >= 80) or (gpu_temp is not None and gpu_temp >= 80) or (ping is not None and ping >= 200):
             return "HIGH"
-        if peak >= 70:
+        if peak >= 70 or (cpu_temp is not None and cpu_temp >= 70) or (gpu_temp is not None and gpu_temp >= 70) or (ping is not None and ping >= 100):
             return "ELEVATED"
         return "NORMAL"
 
@@ -172,7 +237,12 @@ class SystemLogService:
         cpu = psutil.cpu_percent(interval=None)
         memory = psutil.virtual_memory()
         gpu = get_gpu_usage()
-        severity = self._severity(cpu, memory.percent, gpu)
+        cpu_temp = self._cpu_temperature()
+        gpu_temp = self._gpu_temperature()
+        ping = self._ping_value()
+        disk_free = psutil.disk_usage(os.path.abspath(os.sep)).free
+        uptime = max(0, now - psutil.boot_time())
+        severity = self._severity(cpu, memory.percent, gpu, cpu_temp, gpu_temp, ping)
 
         return {
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -187,7 +257,12 @@ class SystemLogService:
             "net_down": net_down,
             "net_up": net_up,
             "process_count": len(psutil.pids()),
-            "severity": severity
+            "severity": severity,
+            "cpu_temp": cpu_temp,
+            "gpu_temp": gpu_temp,
+            "ping": ping,
+            "disk_free": disk_free,
+            "uptime": uptime
         }
 
     def _write_sample(self, sample):
@@ -196,15 +271,15 @@ class SystemLogService:
                 INSERT INTO samples (
                     timestamp, epoch, cpu, ram, ram_used, ram_total,
                     gpu, disk_read, disk_write, net_down, net_up,
-                    process_count, severity
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    process_count, severity, cpu_temp, gpu_temp, ping, disk_free, uptime
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 sample["timestamp"], sample["epoch"],
                 sample["cpu"], sample["ram"],
                 sample["ram_used"], sample["ram_total"],
                 sample["gpu"], sample["disk_read"], sample["disk_write"],
                 sample["net_down"], sample["net_up"],
-                sample["process_count"], sample["severity"]
+                sample["process_count"], sample["severity"], sample["cpu_temp"], sample["gpu_temp"], sample["ping"], sample["disk_free"], sample["uptime"]
             ))
             db.commit()
 
@@ -273,7 +348,7 @@ class SystemLogService:
                 row = db.execute("""
                     SELECT timestamp, cpu, ram, ram_used, ram_total, gpu,
                            disk_read, disk_write, net_down, net_up,
-                           process_count, severity
+                           process_count, severity, cpu_temp, gpu_temp, ping, disk_free, uptime
                     FROM samples
                     ORDER BY epoch DESC
                     LIMIT 1
@@ -374,6 +449,8 @@ class SystemLogPage:
         self.disk_value = self._metric_card(cards, "DISK I/O", "#00ff88")
         self.net_value = self._metric_card(cards, "NETWORK", "#4488ff")
         self.load_value = self._metric_card(cards, "STATUS", "#ff5555")
+        self.temp_value = self._metric_card(cards, "TEMP", "#ff8844")
+        self.ping_value = self._metric_card(cards, "PING", "#44aaff")
 
         middle = ctk.CTkFrame(self.parent, fg_color="transparent")
         middle.pack(fill="both", expand=True, padx=25, pady=10)
@@ -483,7 +560,7 @@ class SystemLogPage:
             (
                 timestamp, cpu, ram, ram_used, ram_total, gpu,
                 disk_read, disk_write, net_down, net_up,
-                process_count, severity
+                process_count, severity, cpu_temp, gpu_temp, ping, disk_free, uptime
             ) = row
 
             self.cpu_value.configure(text=f"{cpu:.0f}%")
@@ -500,6 +577,11 @@ class SystemLogPage:
                 text=f"↓ {net_down:.1f}  ↑ {net_up:.1f} MB/s"
             )
             self.load_value.configure(text=severity)
+            if cpu_temp is not None or gpu_temp is not None:
+                self.temp_value.configure(text=f"{cpu_temp:.0f}°C" if cpu_temp is not None else "N/A")
+            else:
+                self.temp_value.configure(text="N/A")
+            self.ping_value.configure(text="—" if ping is None else f"{ping:.0f} ms")
 
             colors = {
                 "NORMAL": "#00ff88",
