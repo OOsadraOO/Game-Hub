@@ -29,6 +29,7 @@ class GameLauncher:
         self.filter_var = ctk.StringVar(value="All Games")
         self.parent = parent
         self.icon_cache = {}
+        self._render_job = None
         
         self.games = load_json(
             "data/games.json"
@@ -451,6 +452,9 @@ class GameLauncher:
 
     def get_icon(self, exe_path):
 
+        if exe_path in self.icon_cache:
+            return self.icon_cache[exe_path]
+
         try:
 
             large, small = win32gui.ExtractIconEx(exe_path, 0)
@@ -509,11 +513,13 @@ class GameLauncher:
 
             win32gui.DestroyIcon(hicon)
 
-            return ctk.CTkImage(
+            icon_image = ctk.CTkImage(
                 light_image=image,
                 dark_image=image,
                 size=(48,48)
             )
+            self.icon_cache[exe_path] = icon_image
+            return icon_image
 
         except:
             return None
@@ -793,8 +799,12 @@ class GameLauncher:
 
             new_name = name_entry.get()
 
+            old_path = game["path"]
             game["name"] = new_name
             game["path"] = path_entry.get()
+
+            if old_path != game["path"]:
+                self.icon_cache.pop(old_path, None)
 
             if old_name != new_name:
 
@@ -857,6 +867,16 @@ class GameLauncher:
 
     def render_games(self):
 
+        if self._render_job is not None:
+            try:
+                self.parent.after_cancel(self._render_job)
+            except Exception:
+                pass
+        self._render_job = self.parent.after(80, self._render_games_now)
+
+    def _render_games_now(self):
+
+        self._render_job = None
         latest_game = None
 
         for game in self.games:
