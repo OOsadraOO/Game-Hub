@@ -70,27 +70,18 @@ class GameLauncher:
         widget.bind("<Enter>", on_enter, add="+")
         widget.bind("<Leave>", on_leave, add="+")
 
-    def _bind_card_hover(self, card, children):
+    def _bind_card_hover(self, card, children=None):
 
-        normal = "#1b1b1b"
-        hover = "#202525"
-        border_normal = "#2c2c2c"
-        border_hover = "#00ffee"
-
+        # Keep hover handling on the card itself only.
+        # Binding Enter/Leave to every nested widget makes Tk process
+        # many pointer events while a card is moving during scroll.
         self._bind_hover(
             card,
-            normal,
-            hover,
-            border_normal,
-            border_hover
+            "#1b1b1b",
+            "#202525",
+            "#2c2c2c",
+            "#00ffee"
         )
-
-        for child in children:
-            try:
-                child.bind("<Enter>", lambda _e, c=card: c.configure(fg_color="#202525", border_color="#00ffee"), add="+")
-                child.bind("<Leave>", lambda _e, c=card: c.configure(fg_color="#1b1b1b", border_color="#2c2c2c"), add="+")
-            except Exception:
-                pass
 
     # ==================================================
     # 🎨 UI
