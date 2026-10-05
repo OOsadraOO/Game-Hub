@@ -17,6 +17,7 @@ from timer import TimerSystem
 from todo import TodoSystem
 from stats import StatsPage
 from system_log import SystemLogPage
+from system_log import SystemLogPage
 
 # ==================================================
 # 🎨 CUSTOMTKINTER
