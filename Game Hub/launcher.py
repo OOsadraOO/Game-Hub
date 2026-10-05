@@ -18,6 +18,55 @@ from tkinter import messagebox
 from utils import load_json, save_json
 from profiles import GameProfileWindow
 import time
+import sys
+
+
+class SmoothScrollableFrame(ctk.CTkScrollableFrame):
+
+    def __init__(self, *args, **kwargs):
+        self._pending_scroll = 0
+        self._scroll_job = None
+        self._pending_horizontal = False
+        super().__init__(*args, **kwargs)
+
+    def _mouse_wheel_all(self, event):
+        if not self._check_if_valid_scroll(event.widget):
+            return
+
+        if not sys.platform.startswith("win"):
+            return super()._mouse_wheel_all(event)
+
+        units = -int(event.delta / 6)
+        if units == 0:
+            return
+
+        self._pending_scroll += units
+        self._pending_horizontal = self._shift_pressed
+
+        if self._scroll_job is None:
+            self._scroll_job = self.after(8, self._flush_scroll)
+
+    def _flush_scroll(self):
+        self._scroll_job = None
+
+        units = self._pending_scroll
+        horizontal = self._pending_horizontal
+        self._pending_scroll = 0
+
+        if not units:
+            return
+
+        canvas = self._parent_canvas
+
+        if horizontal:
+            if canvas.xview() != (0.0, 1.0):
+                canvas.xview("scroll", units, "units")
+        else:
+            if canvas.yview() != (0.0, 1.0):
+                canvas.yview("scroll", units, "units")
+
+        # Force Tk to paint the newly exposed area immediately.
+        canvas.update_idletasks()
 
 
 class GameLauncher:
@@ -376,7 +425,7 @@ class GameLauncher:
             padx=5
         )
 
-        self.games_frame = ctk.CTkScrollableFrame(
+        self.games_frame = SmoothScrollableFrame(
             self.parent,
             width=1000,
             height=500,
