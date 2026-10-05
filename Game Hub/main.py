@@ -16,6 +16,7 @@ from music import MusicPlayer
 from timer import TimerSystem
 from todo import TodoSystem
 from stats import StatsPage
+from system_log import SystemLogPage
 
 # ==================================================
 # 🎨 CUSTOMTKINTER
@@ -172,7 +173,8 @@ class App(ctk.CTk):
             ("Music", "music", "music"),
             ("Timer", "timer", "timer"),
             ("To-Do", "todo", "todo"),
-            ("Stats", "stats", "stats")
+            ("Stats", "stats", "stats"),
+            ("System Log", "system_log", "log")
         ]
 
         self.nav_buttons = []
@@ -329,6 +331,18 @@ class App(ctk.CTk):
         )
 
         # ==================================================
+        # SYSTEM LOG
+
+        self.pages["system_log"] = ctk.CTkFrame(
+            self.container,
+            fg_color="#111111"
+        )
+
+        self.system_log_page = SystemLogPage(
+            self,
+            self.pages["system_log"]
+        )
+
         # START PAGE
         # ==================================================
 
@@ -373,6 +387,7 @@ class App(ctk.CTk):
             ("Open Timer", "timer", lambda: self.show_page("timer")),
             ("Open To-Do", "todo", lambda: self.show_page("todo")),
             ("Open Statistics", "stats", lambda: self.show_page("stats")),
+            ("Open System Log", "system_log", lambda: self.show_page("system_log")),
         ]
 
         rows = ctk.CTkScrollableFrame(window, corner_radius=15)
