@@ -443,14 +443,28 @@ class SystemLogPage:
         cards = ctk.CTkFrame(self.parent, fg_color="transparent")
         cards.pack(fill="x", padx=25, pady=5)
 
-        self.cpu_value = self._metric_card(cards, "CPU", "#00ffee")
-        self.ram_value = self._metric_card(cards, "RAM", "#ffaa00")
-        self.gpu_value = self._metric_card(cards, "GPU", "#aa66ff")
-        self.disk_value = self._metric_card(cards, "DISK I/O", "#00ff88")
-        self.net_value = self._metric_card(cards, "NETWORK", "#4488ff")
-        self.load_value = self._metric_card(cards, "STATUS", "#ff5555")
-        self.temp_value = self._metric_card(cards, "TEMP", "#ff8844")
-        self.ping_value = self._metric_card(cards, "PING", "#44aaff")
+        primary_cards = ctk.CTkFrame(cards, fg_color="transparent")
+        primary_cards.pack(fill="x")
+
+        self.cpu_value = self._metric_card(primary_cards, "CPU", "#00ffee")
+        self.ram_value = self._metric_card(primary_cards, "RAM", "#ffaa00")
+        self.gpu_value = self._metric_card(primary_cards, "GPU", "#aa66ff")
+        self.disk_value = self._metric_card(primary_cards, "DISK I/O", "#00ff88")
+        self.net_value = self._metric_card(primary_cards, "NETWORK", "#4488ff")
+        self.load_value = self._metric_card(primary_cards, "STATUS", "#ff5555")
+
+        secondary_cards = ctk.CTkFrame(cards, fg_color="transparent")
+        secondary_cards.pack(fill="x", pady=(7, 0))
+
+        self.temp_value = self._metric_card(secondary_cards, "TEMPERATURE", "#ff8844")
+        self.ping_value = self._metric_card(secondary_cards, "PING", "#44aaff")
+
+        ctk.CTkLabel(
+            secondary_cards,
+            text="Hardware sensors are shown only when Windows exposes them.",
+            font=("Arial", 10),
+            text_color="#666666"
+        ).pack(side="right", padx=8, pady=8)
 
         middle = ctk.CTkFrame(self.parent, fg_color="transparent")
         middle.pack(fill="both", expand=True, padx=25, pady=10)
