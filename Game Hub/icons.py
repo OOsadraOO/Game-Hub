@@ -176,6 +176,22 @@ def _draw(draw, kind, s, color):
         draw.ellipse((s*.33, s*.39, s*.40, s*.46), fill=color)
         draw.ellipse((s*.51, s*.39, s*.58, s*.46), fill=color)
 
+    elif kind == "log":
+        # System Log: monitor with an activity pulse.
+        draw.rounded_rectangle(
+            (s*.16, s*.18, s*.84, s*.78),
+            radius=int(s*.06),
+            outline=color,
+            width=w
+        )
+        _line(
+            draw,
+            [(s*.25, s*.52), (s*.37, s*.52), (s*.43, s*.38),
+             (s*.55, s*.64), (s*.63, s*.48), (s*.77, s*.48)],
+            GREEN,
+            w
+        )
+
     elif kind == "monitor":
         draw.rounded_rectangle(
             (s*.16, s*.18, s*.84, s*.68),
