@@ -510,10 +510,20 @@ class SystemLogPage:
         side.pack(side="right", fill="both", padx=(6, 0))
         side.pack_propagate(False)
 
+        events_header = ctk.CTkFrame(side, fg_color="transparent")
+        events_header.pack(fill="x", padx=18, pady=(14, 8))
+
         ctk.CTkLabel(
-            side, text="Performance Events",
+            events_header, text="Performance Events",
             font=("Arial", 18, "bold")
-        ).pack(anchor="w", padx=18, pady=(14, 8))
+        ).pack(anchor="w")
+
+        ctk.CTkLabel(
+            events_header,
+            text="Load spikes, warnings and critical system events",
+            font=("Arial", 10),
+            text_color="#777777"
+        ).pack(anchor="w", pady=(2, 0))
 
         self.events = ctk.CTkScrollableFrame(side, fg_color="transparent")
         self.events.pack(fill="both", expand=True, padx=8, pady=(0, 8))
@@ -527,10 +537,28 @@ class SystemLogPage:
         )
         process_card.pack(fill="x")
 
+        process_header = ctk.CTkFrame(process_card, fg_color="transparent")
+        process_header.pack(fill="x", padx=18, pady=(10, 4))
+
         ctk.CTkLabel(
-            process_card, text="Top Processes by RAM",
+            process_header, text="Top Processes by RAM",
             font=("Arial", 16, "bold")
-        ).pack(anchor="w", padx=18, pady=(10, 4))
+        ).pack(side="left")
+
+        ctk.CTkLabel(
+            process_header,
+            text="Highest RAM usage — updates automatically",
+            font=("Arial", 10),
+            text_color="#777777"
+        ).pack(side="left", padx=(12, 0))
+
+        ctk.CTkLabel(
+            process_card,
+            text="PROCESS                              RAM",
+            font=("Consolas", 10, "bold"),
+            text_color="#777777",
+            anchor="w"
+        ).pack(fill="x", padx=18, pady=(2, 3))
 
         self.process_label = ctk.CTkLabel(
             process_card, text="Collecting process data...",
