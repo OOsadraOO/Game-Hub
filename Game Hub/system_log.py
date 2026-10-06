@@ -528,49 +528,6 @@ class SystemLogPage:
         self.events = ctk.CTkScrollableFrame(side, fg_color="transparent")
         self.events.pack(fill="both", expand=True, padx=8, pady=(0, 8))
 
-        bottom = ctk.CTkFrame(self.parent, fg_color="transparent")
-        bottom.pack(fill="x", padx=25, pady=(0, 18))
-
-        process_card = ctk.CTkFrame(
-            bottom, corner_radius=18, border_width=1,
-            border_color="#252d2d"
-        )
-        process_card.pack(fill="x")
-
-        process_header = ctk.CTkFrame(process_card, fg_color="transparent")
-        process_header.pack(fill="x", padx=18, pady=(10, 4))
-
-        ctk.CTkLabel(
-            process_header, text="Top Processes by RAM",
-            font=("Arial", 16, "bold")
-        ).pack(side="left")
-
-        ctk.CTkLabel(
-            process_header,
-            text="Highest RAM usage — updates automatically",
-            font=("Arial", 10),
-            text_color="#777777"
-        ).pack(side="left", padx=(12, 0))
-
-        # Simple, stable process list. Avoid nested frames so long process names
-        # cannot become clipped or visually corrupted by CustomTkinter layout.
-        process_table = ctk.CTkFrame(process_card, fg_color="transparent")
-        process_table.pack(fill="x", padx=18, pady=(2, 14))
-
-        header = ctk.CTkLabel(
-            process_table,
-            text="PROCESS                                                        RAM",
-            font=("Consolas", 10, "bold"),
-            text_color="#777777",
-            anchor="w",
-            justify="left"
-        )
-        header.pack(fill="x", pady=(0, 4))
-
-        self.process_rows = ctk.CTkFrame(
-            process_table, fg_color="transparent"
-        )
-        self.process_rows.pack(fill="x")
 
 
 
