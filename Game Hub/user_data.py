@@ -33,6 +33,7 @@ class UserDataStore:
             target = os.path.join(target_dir, filename)
             if os.path.exists(source) and not os.path.exists(target):
                 shutil.copy2(source, target)
+                os.remove(source)
                 migrated.append(filename)
         return migrated
 
