@@ -178,22 +178,38 @@ class AuthWindow(ctk.CTkToplevel):
         self.complete_login(user, token)
 
     def register(self):
-        username = self.username_entry.get()
+        username = self.username_entry.get().strip()
         password = self.password_entry.get()
         confirm = self.confirm_entry.get()
 
+        if not username:
+            self.show_error("Please enter a username.")
+            self.username_entry.focus_set()
+            return
+
+        if not password:
+            self.show_error("Please enter a password.")
+            self.password_entry.focus_set()
+            return
+
         if password != confirm:
             self.show_error("Passwords do not match.")
+            self.confirm_entry.focus_set()
             return
 
-        ok, message, user = self.account_db.create_user(username, password)
-        if not ok:
-            self.show_error(message)
-            return
+        try:
+            ok, message, user = self.account_db.create_user(username, password)
+            if not ok or user is None:
+                self.show_error(message or "Could not create the account.")
+                return
 
-        token = self.account_db.create_session(user["id"])
-        self.show_success("Account created. Signing you in…")
-        self.after(250, lambda: self.complete_login(user, token))
+            token = self.account_db.create_session(user["id"])
+            self.show_success("Account created. Signing you in…")
+            self.after(250, lambda: self.complete_login(user, token))
+        except Exception as exc:
+            # Keep registration failures inside the UI instead of silently
+            # terminating the button callback.
+            self.show_error(f"Registration failed: {exc}")
 
     def try_remembered_login(self):
         # The token is intentionally stored by the main app, not inside the UI.
