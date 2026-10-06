@@ -139,7 +139,7 @@ class AuthWindow(ctk.CTkToplevel):
         ctk.CTkButton(
             self.form, text="Create Account", height=46, corner_radius=12,
             fg_color="#00aa88", hover_color="#00ccaa",
-            font=("Arial", 13, "bold"), command=self.register
+            font=("Arial", 13, "bold"), command=self._on_register_click
         ).pack(fill="x", padx=24, pady=(2, 10))
 
         self.status = ctk.CTkLabel(
@@ -148,8 +148,11 @@ class AuthWindow(ctk.CTkToplevel):
         )
         self.status.pack(pady=(2, 16))
 
-        self.confirm_entry.bind("<Return>", lambda _e: self.register())
+        self.confirm_entry.bind("<Return>", lambda _e: self._on_register_click())
         self.username_entry.focus_set()
+
+    def _on_register_click(self):
+        self.after_idle(self.register)
 
     def switch_mode(self, value):
         if value == "Register":
