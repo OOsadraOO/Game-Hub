@@ -552,21 +552,30 @@ class SystemLogPage:
             text_color="#777777"
         ).pack(side="left", padx=(12, 0))
 
-        ctk.CTkLabel(
-            process_card,
-            text="PROCESS                              RAM",
-            font=("Consolas", 10, "bold"),
-            text_color="#777777",
-            anchor="w"
-        ).pack(fill="x", padx=18, pady=(2, 3))
+        process_table = ctk.CTkFrame(process_card, fg_color="transparent")
+        process_table.pack(fill="x", padx=14, pady=(2, 12))
 
-        self.process_label = ctk.CTkLabel(
-            process_card, text="Collecting process data...",
-            font=("Consolas", 11),
-            justify="left",
-            anchor="w"
+        header_row = ctk.CTkFrame(
+            process_table, fg_color="#181e1e", corner_radius=8, height=32
         )
-        self.process_label.pack(fill="x", padx=18, pady=(0, 12))
+        header_row.pack(fill="x", pady=(0, 4))
+        header_row.pack_propagate(False)
+
+        ctk.CTkLabel(
+            header_row, text="PROCESS", font=("Arial", 10, "bold"),
+            text_color="#777777", anchor="w"
+        ).pack(side="left", padx=12)
+
+        ctk.CTkLabel(
+            header_row, text="RAM", font=("Arial", 10, "bold"),
+            text_color="#777777", anchor="e"
+        ).pack(side="right", padx=12)
+
+        self.process_rows = ctk.CTkFrame(
+            process_table, fg_color="transparent"
+        )
+        self.process_rows.pack(fill="x")
+
 
     def _metric_card(self, parent, title, accent):
         card = ctk.CTkFrame(
@@ -669,13 +678,44 @@ class SystemLogPage:
     def refresh_processes(self):
         try:
             rows = self.service.top_processes()
-            lines = [
-                f"{name[:34]:34} {memory:5.1f}%"
-                for name, memory in rows
-            ]
-            self.process_label.configure(
-                text="\n".join(lines) if lines else "No process data available."
-            )
+
+            for widget in self.process_rows.winfo_children():
+                widget.destroy()
+
+            if not rows:
+                ctk.CTkLabel(
+                    self.process_rows,
+                    text="No process data available.",
+                    font=("Arial", 11),
+                    text_color="#777777"
+                ).pack(anchor="w", padx=8, pady=6)
+            else:
+                for name, memory in rows:
+                    row = ctk.CTkFrame(
+                        self.process_rows,
+                        fg_color="#151a1a",
+                        corner_radius=8,
+                        height=34
+                    )
+                    row.pack(fill="x", pady=2)
+                    row.pack_propagate(False)
+
+                    ctk.CTkLabel(
+                        row,
+                        text=name[:45],
+                        font=("Arial", 11),
+                        text_color="#dddddd",
+                        anchor="w"
+                    ).pack(side="left", padx=12)
+
+                    ctk.CTkLabel(
+                        row,
+                        text=f"{memory:.1f}%",
+                        font=("Arial", 11, "bold"),
+                        text_color="#ffaa00",
+                        anchor="e"
+                    ).pack(side="right", padx=12)
+
         except Exception:
             pass
 
