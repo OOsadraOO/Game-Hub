@@ -552,34 +552,25 @@ class SystemLogPage:
             text_color="#777777"
         ).pack(side="left", padx=(12, 0))
 
+        # Simple, stable process list. Avoid nested frames so long process names
+        # cannot become clipped or visually corrupted by CustomTkinter layout.
         process_table = ctk.CTkFrame(process_card, fg_color="transparent")
-        process_table.pack(fill="x", padx=14, pady=(2, 14))
-        process_table.grid_columnconfigure(0, weight=1)
-        process_table.grid_columnconfigure(1, weight=0, minsize=100)
+        process_table.pack(fill="x", padx=18, pady=(2, 14))
 
-        ctk.CTkLabel(
+        header = ctk.CTkLabel(
             process_table,
-            text="PROCESS",
-            font=("Arial", 10, "bold"),
+            text="PROCESS                                                        RAM",
+            font=("Consolas", 10, "bold"),
             text_color="#777777",
-            anchor="w"
-        ).grid(row=0, column=0, sticky="w", padx=(12, 8), pady=(0, 5))
-
-        ctk.CTkLabel(
-            process_table,
-            text="RAM",
-            font=("Arial", 10, "bold"),
-            text_color="#777777",
-            anchor="e"
-        ).grid(row=0, column=1, sticky="e", padx=(8, 12), pady=(0, 5))
+            anchor="w",
+            justify="left"
+        )
+        header.pack(fill="x", pady=(0, 4))
 
         self.process_rows = ctk.CTkFrame(
             process_table, fg_color="transparent"
         )
-        self.process_rows.grid(
-            row=1, column=0, columnspan=2, sticky="ew"
-        )
-        self.process_rows.grid_columnconfigure(0, weight=1)
+        self.process_rows.pack(fill="x")
 
 
 
@@ -692,43 +683,25 @@ class SystemLogPage:
                 ctk.CTkLabel(
                     self.process_rows,
                     text="No process data available.",
-                    font=("Arial", 11),
-                    text_color="#777777"
-                ).pack(anchor="w", padx=8, pady=6)
+                    font=("Consolas", 11),
+                    text_color="#777777",
+                    anchor="w"
+                ).pack(fill="x", padx=4, pady=4)
             else:
-                for index, (name, memory) in enumerate(rows):
-                    row = ctk.CTkFrame(
+                for name, memory in rows:
+                    safe_name = (name or "Unknown").replace("\\", "/")
+                    if len(safe_name) > 55:
+                        safe_name = safe_name[:52] + "..."
+
+                    line = ctk.CTkLabel(
                         self.process_rows,
-                        fg_color="#151a1a",
-                        corner_radius=8,
-                        height=36
-                    )
-                    row.grid(row=index, column=0, sticky="ew", pady=2)
-                    row.grid_columnconfigure(0, weight=1)
-                    row.grid_propagate(False)
-
-                    ctk.CTkLabel(
-                        row,
-                        text=name[:55],
-                        font=("Arial", 11, "bold"),
+                        text=f"{safe_name:<58}{memory:>7.1f}%",
+                        font=("Consolas", 11),
                         text_color="#dddddd",
-                        anchor="w"
-                    ).grid(
-                        row=0, column=0, sticky="ew",
-                        padx=(12, 8)
+                        anchor="w",
+                        justify="left"
                     )
-
-                    ctk.CTkLabel(
-                        row,
-                        text=f"{memory:.1f}%",
-                        font=("Arial", 11, "bold"),
-                        text_color="#ffaa00",
-                        anchor="e",
-                        width=80
-                    ).grid(
-                        row=0, column=1, sticky="e",
-                        padx=(8, 12)
-                    )
+                    line.pack(fill="x", padx=4, pady=1)
 
         except Exception:
             pass
