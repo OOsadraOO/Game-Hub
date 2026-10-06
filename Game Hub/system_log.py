@@ -553,28 +553,34 @@ class SystemLogPage:
         ).pack(side="left", padx=(12, 0))
 
         process_table = ctk.CTkFrame(process_card, fg_color="transparent")
-        process_table.pack(fill="x", padx=14, pady=(2, 12))
-
-        header_row = ctk.CTkFrame(
-            process_table, fg_color="#181e1e", corner_radius=8, height=32
-        )
-        header_row.pack(fill="x", pady=(0, 4))
-        header_row.pack_propagate(False)
+        process_table.pack(fill="x", padx=14, pady=(2, 14))
+        process_table.grid_columnconfigure(0, weight=1)
+        process_table.grid_columnconfigure(1, weight=0, minsize=100)
 
         ctk.CTkLabel(
-            header_row, text="PROCESS", font=("Arial", 10, "bold"),
-            text_color="#777777", anchor="w"
-        ).pack(side="left", padx=12)
+            process_table,
+            text="PROCESS",
+            font=("Arial", 10, "bold"),
+            text_color="#777777",
+            anchor="w"
+        ).grid(row=0, column=0, sticky="w", padx=(12, 8), pady=(0, 5))
 
         ctk.CTkLabel(
-            header_row, text="RAM", font=("Arial", 10, "bold"),
-            text_color="#777777", anchor="e"
-        ).pack(side="right", padx=12)
+            process_table,
+            text="RAM",
+            font=("Arial", 10, "bold"),
+            text_color="#777777",
+            anchor="e"
+        ).grid(row=0, column=1, sticky="e", padx=(8, 12), pady=(0, 5))
 
         self.process_rows = ctk.CTkFrame(
             process_table, fg_color="transparent"
         )
-        self.process_rows.pack(fill="x")
+        self.process_rows.grid(
+            row=1, column=0, columnspan=2, sticky="ew"
+        )
+        self.process_rows.grid_columnconfigure(0, weight=1)
+
 
 
     def _metric_card(self, parent, title, accent):
@@ -690,31 +696,39 @@ class SystemLogPage:
                     text_color="#777777"
                 ).pack(anchor="w", padx=8, pady=6)
             else:
-                for name, memory in rows:
+                for index, (name, memory) in enumerate(rows):
                     row = ctk.CTkFrame(
                         self.process_rows,
                         fg_color="#151a1a",
                         corner_radius=8,
-                        height=34
+                        height=36
                     )
-                    row.pack(fill="x", pady=2)
-                    row.pack_propagate(False)
+                    row.grid(row=index, column=0, sticky="ew", pady=2)
+                    row.grid_columnconfigure(0, weight=1)
+                    row.grid_propagate(False)
 
                     ctk.CTkLabel(
                         row,
-                        text=name[:45],
-                        font=("Arial", 11),
+                        text=name[:55],
+                        font=("Arial", 11, "bold"),
                         text_color="#dddddd",
                         anchor="w"
-                    ).pack(side="left", padx=12)
+                    ).grid(
+                        row=0, column=0, sticky="ew",
+                        padx=(12, 8)
+                    )
 
                     ctk.CTkLabel(
                         row,
                         text=f"{memory:.1f}%",
                         font=("Arial", 11, "bold"),
                         text_color="#ffaa00",
-                        anchor="e"
-                    ).pack(side="right", padx=12)
+                        anchor="e",
+                        width=80
+                    ).grid(
+                        row=0, column=1, sticky="e",
+                        padx=(8, 12)
+                    )
 
         except Exception:
             pass
