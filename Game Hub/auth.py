@@ -198,6 +198,8 @@ class AuthWindow(ctk.CTkToplevel):
             return
 
         try:
+            self.show_success("Creating account…")
+            self.update_idletasks()
             ok, message, user = self.account_db.create_user(username, password)
             if not ok or user is None:
                 self.show_error(message or "Could not create the account.")
