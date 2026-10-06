@@ -16,8 +16,8 @@ class SettingsWindow(ctk.CTkToplevel):
         }
 
         self.title("⚙ GameHub Settings")
-        self.geometry("520x500")
-        self.minsize(480, 450)
+        self.geometry("560x700")
+        self.minsize(520, 650)
         self.grab_set()
 
         self.build_ui()
