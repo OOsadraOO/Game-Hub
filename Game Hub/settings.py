@@ -239,9 +239,12 @@ class SettingsWindow(ctk.CTkToplevel):
         def callback(values):
             if values[1] != values[2]:
                 return False, "New passwords do not match."
-            return self.parent_app.account_db.change_password(
+            ok, message = self.parent_app.account_db.change_password(
                 user_id, values[0], values[1]
             )
+            if ok:
+                self.after(700, self._force_relogin)
+            return ok, message
 
         self._account_dialog(
             "Change Password",
