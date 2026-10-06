@@ -268,7 +268,37 @@ class AccountDB:
                 (self._token_hash(token),),
             )
 
+
+    # ==================================================
+    # USER DATA STORAGE
+    # ==================================================
+
+    USER_DATA_FILES = (
+        "games.json",
+        "game_stats.json",
+        "playtime.json",
+        "todo.json",
+        "music_playlist.json",
+        "game_profiles.json",
+    )
+
+    def user_data_dir(self, user_id):
+        path = os.path.join("data", "users", str(user_id))
+        os.makedirs(path, exist_ok=True)
+        return path
+
+    def user_data_path(self, user_id, filename):
+        if filename not in self.USER_DATA_FILES:
+            raise ValueError("Unsupported user data file.")
+        return os.path.join(self.user_data_dir(user_id), filename)
+
+    def delete_user_data(self, user_id):
+        import shutil
+        path = os.path.join("data", "users", str(user_id))
+        if os.path.isdir(path):
+            shutil.rmtree(path)
     def delete_user(self, user_id):
+        self.delete_user_data(user_id)
         with self._connect() as db:
             cursor = db.execute("DELETE FROM users WHERE id = ?", (user_id,))
         return cursor.rowcount > 0
