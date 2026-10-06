@@ -136,6 +136,16 @@ class SettingsWindow(ctk.CTkToplevel):
 
         ctk.CTkButton(
             account_buttons,
+            text="Delete Account",
+            height=38,
+            corner_radius=10,
+            fg_color="#8c3030",
+            hover_color="#b33b3b",
+            command=self.delete_account
+        ).grid(row=1, column=0, columnspan=2, padx=4, pady=(8, 0), sticky="ew")
+
+        ctk.CTkButton(
+            account_buttons,
             text="Sign Out",
             height=38,
             corner_radius=10,
@@ -244,8 +254,77 @@ class SettingsWindow(ctk.CTkToplevel):
         )
 
     def refresh_account_ui(self):
-        for widget in self.winfo_children():
-            pass
+        self.destroy()
+        SettingsWindow(self.parent_app)
+
+    def delete_account(self):
+        user_id = self.parent_app.current_user["id"]
+
+        dialog = ctk.CTkToplevel(self)
+        dialog.title("Delete GameHub Account")
+        dialog.geometry("440x380")
+        dialog.resizable(False, False)
+        dialog.grab_set()
+
+        ctk.CTkLabel(
+            dialog, text="Delete Account",
+            font=("Arial", 24, "bold"), text_color="#ff6b6b"
+        ).pack(pady=(28, 8))
+
+        ctk.CTkLabel(
+            dialog,
+            text="This permanently removes your account and all personal GameHub data.\nSystem Log data is not part of the account and will remain.",
+            wraplength=370, justify="center", text_color="#b8c0c0"
+        ).pack(pady=(0, 18))
+
+        password = ctk.CTkEntry(
+            dialog, height=42, corner_radius=10,
+            placeholder_text="Enter your current password", show="•"
+        )
+        password.pack(fill="x", padx=28, pady=8)
+
+        confirm = ctk.CTkEntry(
+            dialog, height=42, corner_radius=10,
+            placeholder_text="Type DELETE to confirm"
+        )
+        confirm.pack(fill="x", padx=28, pady=8)
+
+        status = ctk.CTkLabel(dialog, text="", wraplength=360)
+        status.pack(pady=8)
+
+        def submit():
+            if confirm.get().strip() != "DELETE":
+                status.configure(text="Type DELETE exactly to confirm.", text_color="#ff6b6b")
+                return
+
+            if not self.parent_app.account_db.authenticate(
+                self.parent_app.current_user["username"], password.get()
+            ):
+                status.configure(text="Current password is incorrect.", text_color="#ff6b6b")
+                return
+
+            self.parent_app.account_db.delete_user(user_id)
+            self.parent_app.save_remembered_token(None)
+            self.parent_app.session_token = None
+            self.parent_app.current_user = None
+            from utils import clear_active_user
+            clear_active_user()
+            dialog.grab_release()
+            dialog.destroy()
+            self.destroy()
+            self.parent_app.open_auth()
+
+        ctk.CTkButton(
+            dialog, text="Delete Account Permanently", height=44,
+            fg_color="#8c3030", hover_color="#b33b3b",
+            command=submit
+        ).pack(fill="x", padx=28, pady=14)
+
+        password.focus_set()
+
+    def _force_relogin(self):
+        self.destroy()
+        self.parent_app.logout()
 
     def sign_out(self):
         self.destroy()
