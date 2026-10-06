@@ -21,6 +21,8 @@ from stats import StatsPage
 from system_log import SystemLogPage
 from account_db import AccountDB
 from auth import AuthWindow
+from user_data import UserDataStore
+from utils import set_active_user, clear_active_user
 
 # ==================================================
 # 🎨 CUSTOMTKINTER
@@ -87,6 +89,7 @@ class App(ctk.CTk):
         # ==================================================
 
         self.account_db = AccountDB()
+        self.user_data = UserDataStore()
         self.current_user = None
         self.session_token = None
         self.remember_path = os.path.join("data", "remember_me.json")
@@ -395,6 +398,8 @@ class App(ctk.CTk):
                 pass
 
     def on_login(self, user, token):
+        self.user_data.migrate_legacy(user["id"])
+        set_active_user(user["id"])
         self.current_user = user
         self.session_token = token
         self.save_remembered_token(token)
@@ -405,6 +410,7 @@ class App(ctk.CTk):
             self.account_db.revoke_session(self.session_token)
         self.session_token = None
         self.current_user = None
+        clear_active_user()
         self.save_remembered_token(None)
         self.open_auth()
 
