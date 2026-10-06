@@ -3,6 +3,8 @@
 # ==================================================
 
 import customtkinter as ctk
+import json
+import os
 
 from config import *
 from theme import animate_rgb
@@ -17,7 +19,8 @@ from timer import TimerSystem
 from todo import TodoSystem
 from stats import StatsPage
 from system_log import SystemLogPage
-from system_log import SystemLogPage
+from account_db import AccountDB
+from auth import AuthWindow
 
 # ==================================================
 # 🎨 CUSTOMTKINTER
@@ -83,14 +86,16 @@ class App(ctk.CTk):
         # 🎬 SPLASH
         # ==================================================
 
+        self.account_db = AccountDB()
+        self.current_user = None
+        self.session_token = None
+        self.remember_path = os.path.join("data", "remember_me.json")
+
         self.withdraw()
 
         splash = SplashScreen(self)
 
-        self.after(
-            2500,
-            self.deiconify
-        )
+        self.after(2500, self._finish_startup)
 
         # ==================================================
         # GRID
@@ -357,6 +362,57 @@ class App(ctk.CTk):
         # ==================================================
 
         animate_rgb(self)
+
+    # ==================================================
+    # ACCOUNT / AUTH
+    # ==================================================
+
+    def _finish_startup(self):
+        self.deiconify()
+        self.after(80, self.open_auth)
+
+    def open_auth(self):
+        if self.current_user is not None:
+            return
+        AuthWindow(self, self.account_db, self.on_login)
+
+    def load_remembered_token(self):
+        try:
+            with open(self.remember_path, "r", encoding="utf-8") as file:
+                return json.load(file).get("token")
+        except Exception:
+            return None
+
+    def save_remembered_token(self, token):
+        os.makedirs(os.path.dirname(self.remember_path), exist_ok=True)
+        if token:
+            with open(self.remember_path, "w", encoding="utf-8") as file:
+                json.dump({"token": token}, file)
+        else:
+            try:
+                os.remove(self.remember_path)
+            except FileNotFoundError:
+                pass
+
+    def on_login(self, user, token):
+        self.current_user = user
+        self.session_token = token
+        self.save_remembered_token(token)
+        self.show_page("home")
+
+    def logout(self):
+        if self.session_token:
+            self.account_db.revoke_session(self.session_token)
+        self.session_token = None
+        self.current_user = None
+        self.save_remembered_token(None)
+        self.open_auth()
+
+    def refresh_current_user(self):
+        if self.current_user:
+            fresh = self.account_db.get_user(self.current_user["id"])
+            if fresh:
+                self.current_user = fresh
 
     def open_command_palette(self, _event=None):
 
