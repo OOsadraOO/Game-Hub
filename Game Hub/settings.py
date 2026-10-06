@@ -144,15 +144,20 @@ class SettingsWindow(ctk.CTkToplevel):
             command=self.delete_account
         ).grid(row=1, column=0, columnspan=2, padx=4, pady=(8, 0), sticky="ew")
 
+        # Sign Out is kept as a separate, clearly visible action below
+        # the account-management buttons so it cannot be mistaken for
+        # account deletion or be missed in the account card.
+
         ctk.CTkButton(
-            account_buttons,
+            self,
             text="Sign Out",
-            height=38,
-            corner_radius=10,
+            height=44,
+            corner_radius=12,
             fg_color="#6b2525",
             hover_color="#8c3030",
+            font=("Arial", 13, "bold"),
             command=self.sign_out
-        ).grid(row=0, column=2, padx=4, sticky="ew")
+        ).pack(fill="x", padx=25, pady=(18, 8))
 
         ctk.CTkButton(
             self,
